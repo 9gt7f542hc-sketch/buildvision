@@ -1,0 +1,1171 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>:root{padding-top:env(safe-area-inset-top,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>BuildVision AI</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BuildVision">
+<meta name="theme-color" content="#16181b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: mobile-first single column, sticky project header, fixed bottom tab bar; widens to a centered 720px column on desktop */
+:root{
+  --bg:#f2f1ee; --surface:#ffffff; --surface2:#e8e6e1; --line:#d6d3cc;
+  --fg:#1c1d1f; --muted:#62615c; --accent:#e8661c; --accent-fg:#ffffff;
+  --ok:#2f7d4f; --warn:#b7791f; --bad:#b83a2e; --info:#33608f;
+  --chip-ok:#e2f1e7; --chip-warn:#f8ecd6; --chip-bad:#f6e0dd; --chip-info:#e0e9f3;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:14px; --tap:52px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141517; --surface:#1d1f22; --surface2:#272a2e; --line:#33373c;
+  --fg:#ecebe7; --muted:#a3a19b; --accent:#f07a32; --accent-fg:#1a0e05;
+  --ok:#5cbf83; --warn:#e2a64a; --bad:#e8786c; --info:#7fa9d6;
+  --chip-ok:#1f3326; --chip-warn:#3a2f1b; --chip-bad:#3d2421; --chip-info:#1f2c3b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141517; --surface:#1d1f22; --surface2:#272a2e; --line:#33373c;
+  --fg:#ecebe7; --muted:#a3a19b; --accent:#f07a32; --accent-fg:#1a0e05;
+  --ok:#5cbf83; --warn:#e2a64a; --bad:#e8786c; --info:#7fa9d6;
+  --chip-ok:#1f3326; --chip-warn:#3a2f1b; --chip-bad:#3d2421; --chip-info:#1f2c3b; color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--body);font-size:16px;line-height:1.45;padding-inline:16px;padding-block:0 calc(92px + env(safe-area-inset-bottom,0px))}
+#root{max-width:720px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:1.7rem;font-weight:800}
+h2{font-size:1.25rem;font-weight:700}
+h3{font-size:1.05rem;font-weight:700}
+p{margin:0}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 10px;display:flex;align-items:center;gap:10px}
+.brandmark{display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;border-radius:9px;background:var(--accent);display:grid;place-items:center;color:var(--accent-fg);font-family:var(--display);font-weight:800;font-size:1rem}
+button,.btn{font:inherit;font-weight:600;min-height:var(--tap);padding:0 18px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);color:var(--fg);display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;text-align:center}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+button.ghost{background:transparent}
+button.block{width:100%}
+button:disabled{opacity:.5;cursor:not-allowed}
+button.icon{min-width:var(--tap);padding:0}
+button svg{width:22px;height:22px;flex:none}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.plist{display:flex;flex-direction:column;gap:12px}
+.pcard{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px;text-align:left;width:100%;min-height:96px}
+.thumb{width:84px;height:84px;border-radius:10px;object-fit:cover;background:var(--surface2);flex:none}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--surface2);color:var(--muted);white-space:nowrap}
+.chip.ok{background:var(--chip-ok);color:var(--ok)}
+.chip.warn{background:var(--chip-warn);color:var(--warn)}
+.chip.bad{background:var(--chip-bad);color:var(--bad)}
+.chip.info{background:var(--chip-info);color:var(--info)}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;position:sticky;top:calc(env(safe-area-inset-top,0px) + 62px);z-index:4;background:var(--bg);padding-top:4px}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{min-height:44px;border-radius:999px;padding:0 16px;flex:none}
+.tabs button[aria-selected="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:.92rem}
+input,select,textarea{font:inherit;font-size:16px;min-height:var(--tap);padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);width:100%}
+textarea{min-height:120px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.two>*{min-width:0}
+.big-m2{display:flex;align-items:baseline;gap:8px}
+.big-m2 input{font-family:var(--display);font-size:2rem;font-weight:800;min-height:64px}
+.pgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (min-width:560px){.pgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.ph{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.ph img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:var(--surface2)}
+.ph select{border:0;border-top:1px solid var(--line);border-radius:0;min-height:46px;font-size:.88rem}
+.bigbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bigbtns button{min-height:88px;flex-direction:column;font-size:1rem}
+.bigbtns svg{width:28px;height:28px}
+.stage{display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;align-items:start}
+.stage .img{width:92px;height:122px;border-radius:10px;object-fit:cover;background:var(--surface2);display:grid;place-items:center;color:var(--muted);font-family:var(--mono);font-size:.7rem;text-align:center;padding:6px}
+.step{font-family:var(--mono);font-size:.78rem;color:var(--accent);font-weight:500}
+details>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600;color:var(--info)}
+pre.prompt{white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-size:.78rem;background:var(--surface2);border-radius:10px;padding:12px;margin:0;max-height:240px;overflow:auto}
+.analysis{white-space:pre-wrap;line-height:1.55}
+.notice{border-left:4px solid var(--warn);background:var(--chip-warn);padding:12px 14px;border-radius:10px;font-size:.92rem}
+.notice.bad{border-color:var(--bad);background:var(--chip-bad)}
+.notice.ok{border-color:var(--ok);background:var(--chip-ok)}
+.notice.info{border-color:var(--info);background:var(--chip-info)}
+nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;gap:8px}
+nav.bottom button{flex:1;max-width:220px;min-height:56px;border:0;flex-direction:column;gap:2px;font-size:.78rem;background:transparent;color:var(--muted)}
+nav.bottom button[aria-current="page"]{color:var(--accent)}
+nav.bottom svg{width:24px;height:24px}
+.svc{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding-block:12px;border-bottom:1px solid var(--line)}
+.svc:last-child{border-bottom:0}
+.progress{height:10px;border-radius:999px;background:var(--surface2);overflow:hidden}
+.progress>div{height:100%;background:var(--accent);transition:width .2s}
+video.out{width:100%;border-radius:12px;background:#000;max-height:70vh}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.unit{display:grid;grid-template-columns:80px 1fr 1.3fr 44px;gap:8px;align-items:end}
+.unit>*{min-width:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:12px 18px;border-radius:12px;font-weight:600;z-index:20;max-width:calc(100% - 32px)}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.sheet>div{background:var(--bg);width:100%;max-width:720px;max-height:88vh;overflow:auto;border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px))}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<div id="root"><p id="boot" style="padding-block:40px;font-size:1.05rem">BuildVision yükleniyor…</p></div>
+<script>
+window.addEventListener("error",function(e){var b=document.getElementById("boot");if(b)b.textContent="Uygulama başlatılamadı: "+(e.message||"bilinmeyen hata")+". Sayfayı yenileyin.";});
+setTimeout(function(){if(!window.__bvStarted){var b=document.getElementById("boot");if(b)b.textContent="Uygulama dosyaları yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.";}},12000);
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
+<script>
+"use strict";
+const {useState,useEffect,useRef,useCallback,useMemo} = React;
+function cssObj(str){const o={};String(str).split(";").forEach(d=>{const i=d.indexOf(":");if(i<1)return;const k=d.slice(0,i).trim(),v=d.slice(i+1).trim();if(!k)return;o[k.startsWith("--")?k:k.replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]=v});return o}
+function h(type,props,...children){if(props&&typeof props.style==="string")props={...props,style:cssObj(props.style)};return React.createElement(type,props,...children)}
+const html = htm.bind(h);
+
+/* ------------------------------------------------------------------ constants */
+const ROLES = [
+  ["empty_plot","Boş arsa"],["construction_front","Şantiye (ön)"],["construction_aerial","Şantiye (havadan)"],
+  ["aerial","Havadan / konum"],["render_3d","3D mimari görsel"],["floor_plan","Kat planı"],["other","Diğer"]];
+const ROLE_LABEL = Object.fromEntries(ROLES);
+const STAGE_SETS = {
+  empty_plot: [
+    ["empty","Boş arsa","The plot is empty: flat dirt and dry grass, survey stakes and string lines marking the footprint."],
+    ["excavation","Hafriyat","Excavation: an excavator digs the footprint, a dump truck is loaded, piles of soil."],
+    ["foundation","Temel","Foundation: rebar grid and formwork, a concrete mixer pours the raft foundation."],
+    ["frame","Betonarme karkas","Reinforced concrete columns and slabs rise floor by floor, timber shoring, tower crane."],
+    ["walls_roof","Duvar ve çatı","Brick infill walls, empty window openings, roof built, scaffolding around."],
+    ["facade","Cephe ve pencere","Plaster and cladding applied, windows installed, scaffolding partly removed."],
+    ["landscape","Bahçe ve çevre","Facade finished, lawn and trees planted, walkway and parking paved."],
+    ["done","Tamamlandı","Finished building, clean site, warm exterior lights."]],
+  ongoing_construction: [
+    ["today","Bugün (gerçek fotoğraf)",""],
+    ["rough","Kaba inşaat tamamlanıyor","Remaining brick infill completed, roof structure built on top, workers on site."],
+    ["roof_scaffold","Çatı ve iskele","Roof covered, full scaffolding with safety nets around the facade."],
+    ["plaster","Sıva","Plaster applied across the facade from top to bottom, scaffolding in place."],
+    ["windows","Doğrama ve korkuluk","Windows installed in every existing opening, balcony railings mounted, scaffolding partly removed."],
+    ["landscape","Çevre düzenlemesi","Scaffolding removed, debris cleared, lawn, fence and garden lights installed."],
+    ["done","Anahtar teslim","Finished building matching the architect's 3D design, clean site, warm lights."]]
+};
+const KEEP_BLOCK = {
+  empty_plot: "Use the uploaded reference image (the finished design). Keep EXACTLY the same camera position, angle, lens, framing, plot boundaries, surroundings, lighting and building geometry. Only change the construction stage as described. Ultra photorealistic, natural daylight.",
+  ongoing_construction: "Use reference image 1 (the real construction photo) as the base. Keep EXACTLY the same camera position, angle, framing, neighboring buildings and lighting. Keep the floor count, floor heights, column grid, window and balcony openings exactly as in reference image 1. Match the finished design in reference image 2 (architect's 3D render). Only change the construction progress as described. Ultra photorealistic, natural daylight."
+};
+const VIDEO_PROMPT = "Construction timelapse, locked-off static camera, no camera movement. Fast-forward: workers and machines moving quickly, shadows sweeping, clouds moving fast. The building progresses gradually and continuously from the first frame to the last frame; nothing appears suddenly. Keep geometry identical. Photorealistic.";
+
+const STATUS = {
+  real:["ok","Gerçek fotoğraf"], render:["info","Mimar 3D görseli (farklı açı)"], generated:["info","AI ile üretildi"], external:["info","Dışarıdan yüklendi"],
+  planned:["", "Planlandı, görsel yok"], failed:["bad","Üretilemedi"]
+};
+
+function uid(){return Math.random().toString(36).slice(2,10)}
+function slug(s){return (s||"proje").toLocaleLowerCase("tr").replace(/ı/g,"i").replace(/ğ/g,"g").replace(/ü/g,"u").replace(/ş/g,"s").replace(/ö/g,"o").replace(/ç/g,"c").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40)||"proje"}
+function fmtTL(n){if(n==null||n==="")return "";return "₺"+Number(n).toLocaleString("tr-TR")}
+function stagesFor(type){return STAGE_SETS[type].map(([key,title,desc])=>({key,title,desc,status:"planned",media:null}))}
+function normalize(x){
+  const type=x.type==="empty_plot"?"empty_plot":"ongoing_construction";
+  const base={aiClips:[],aiFilmSeconds:60,aiTest:null,name:"Adsız proje",status:"",createdAt:"",location:"",plotM2:"",floors:{value:"",confirmed:false},unitsTotal:"",units:[],delivery:"",phone:"",brand:"",claims:[],photos:[],analysis:null,outputs:[]};
+  const p={...base,...x,type};
+  p.floors={value:"",confirmed:false,...(x.floors||{})};
+  for(const k of ["units","claims","photos","outputs","aiClips"])if(!Array.isArray(p[k]))p[k]=[];
+  if(!Array.isArray(p.stages)||!p.stages.length)p.stages=stagesFor(type);
+  return p;
+}
+function newProject(name,type){
+  return {id:slug(name)+"-"+uid().slice(0,4),name,type,status:"Bilgi bekleniyor",createdAt:new Date().toISOString(),
+    location:"",plotM2:"",floors:{value:"",confirmed:false},unitsTotal:"",units:[],delivery:"",phone:"",brand:"",
+    claims:[],photos:[],analysis:null,stages:stagesFor(type),outputs:[]};
+}
+
+/* ------------------------------------------------------------------ storage: claude.ai (db + assets) or device (IndexedDB) */
+const Store = (()=>{
+  let mode="loading", db=null, assets=null, downloads=null, sample=null, idb=null;
+  const listeners=new Set();
+  function idbOpen(){return new Promise((res,rej)=>{const r=indexedDB.open("buildvision",1);r.onupgradeneeded=()=>{r.result.createObjectStore("projects",{keyPath:"id"});r.result.createObjectStore("blobs")};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+  function tx(store,m,fn){return new Promise((res,rej)=>{const t=idb.transaction(store,m);const s=t.objectStore(store);const out=fn(s);t.oncomplete=()=>res(out&&out.result);t.onerror=()=>rej(t.error)})}
+  const blobUrls={};
+  async function init(){
+    const c = window.claude;
+    if(c && c.use){
+      try{
+        [db,assets,downloads,sample] = await Promise.all([c.use("db"),c.use("assets"),c.use("downloads"),c.use("sample")]);
+      }catch(e){}
+    }
+    if(db){mode="cloud";}
+    else{
+      try{idb=await idbOpen();mode="device"}catch(e){mode="memory"}
+    }
+    return mode;
+  }
+  const mem={projects:{},blobs:{}};
+  function subscribe(cb){
+    if(mode==="cloud"){
+      return db.collection("projects").onSnapshot(s=>cb(s.docs.map(d=>normalize({...d.data(),id:d.id}))), e=>cb(null,e));
+    }
+    const fire=async()=>{let list=[];if(mode==="device"){list=await tx("projects","readonly",s=>s.getAll())}else list=Object.values(mem.projects);cb((list||[]).map(normalize))};
+    listeners.add(fire);fire();return ()=>listeners.delete(fire);
+  }
+  async function save(p){
+    const clean=JSON.parse(JSON.stringify(p));
+    if(mode==="cloud"){const {id,...rest}=clean;await db.doc("projects/"+id).set(rest);return}
+    if(mode==="device")await tx("projects","readwrite",s=>s.put(clean));else mem.projects[p.id]=clean;
+    listeners.forEach(f=>f());
+  }
+  async function remove(id){
+    if(mode==="cloud"){await db.doc("projects/"+id).delete();return}
+    if(mode==="device")await tx("projects","readwrite",s=>s.delete(id));else delete mem.projects[id];
+    listeners.forEach(f=>f());
+  }
+  async function putBlob(blob){
+    if(mode==="cloud"){
+      if(!assets) throw {code:"not_granted",message:"Bu görünümde dosya yükleme izni yok."};
+      const r=await assets.upload(blob,{type:blob.type||"image/jpeg"});return r.id;
+    }
+    const id=uid()+uid();
+    if(mode==="device")await tx("blobs","readwrite",s=>s.put(blob,id));else mem.blobs[id]=blob;
+    return id;
+  }
+  function url(id){
+    if(!id)return "";
+    if(mode==="cloud")return "/_blob/"+id;
+    return blobUrls[id]||"";
+  }
+  async function resolveUrl(id){
+    if(!id)return "";
+    if(mode==="cloud")return "/_blob/"+id;
+    if(blobUrls[id])return blobUrls[id];
+    let b = mode==="device"? await tx("blobs","readonly",s=>s.get(id)) : mem.blobs[id];
+    if(!b)return "";
+    blobUrls[id]=URL.createObjectURL(b);return blobUrls[id];
+  }
+  async function getBlob(id){
+    if(mode==="cloud"){const r=await fetch("/_blob/"+id);return await r.blob()}
+    return mode==="device"? await tx("blobs","readonly",s=>s.get(id)) : mem.blobs[id];
+  }
+  async function saveFile(blob,filename){
+    if(downloads){return downloads.save({filename,data:blob})}
+    const file=new File([blob],filename,{type:blob.type});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:filename});return {status:"shared"}}
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;a.click();return {status:"saved"};
+  }
+  async function importProjectZip(file,onStep){
+    onStep&&onStep("ZIP okunuyor");
+    const entries=await readZip(file);
+    const jsonName=Object.keys(entries).find(n=>/\.json$/i.test(n)&&!n.startsWith("__MACOSX"));
+    if(!jsonName)throw new Error("ZIP içinde proje bilgisi (.json) bulunamadı. Doğru dosyayı seçtiğinizden emin olun.");
+    let doc;try{doc=JSON.parse(new TextDecoder().decode(await entries[jsonName]()))}catch(e){throw new Error("Proje bilgisi okunamadı.")}
+    if(!doc||!doc.project||!Array.isArray(doc.files))throw new Error("Bu ZIP bir BuildVision proje dosyası değil.");
+    const map={};let n=0;
+    for(const f of doc.files){
+      const key=Object.keys(entries).find(k=>k===f.file||k.endsWith("/"+f.file));
+      if(!key)throw new Error("ZIP içinde eksik dosya: "+f.file);
+      onStep&&onStep(`Dosyalar kaydediliyor (${++n}/${doc.files.length})`);
+      const type=/\.mp4$/i.test(f.file)?"video/mp4":/\.png$/i.test(f.file)?"image/png":"image/jpeg";
+      map[f.file]=await putBlob(new Blob([await entries[key]()],{type}));
+    }
+    const ref=v=>v&&map[v]?map[v]:v;
+    const p=doc.project;
+    p.photos=(p.photos||[]).map(ph=>({...ph,id:ref(ph.id)}));
+    p.stages=(p.stages||[]).map(st=>({...st,media:ref(st.media)}));
+    p.outputs=(p.outputs||[]).map(o=>({...o,id:ref(o.id)}));
+    let id=doc.id||slug(p.name);
+    const existing=await new Promise(r=>{const un=subscribe(list=>{r(list||[]);setTimeout(()=>un&&un(),0)})});
+    if(existing.some(x=>x.id===id))id=id+"-"+uid().slice(0,4);
+    await save(normalize({...p,id}));
+    return {id,files:n};
+  }
+  return {init,subscribe,save,remove,importProjectZip,putBlob,url,resolveUrl,getBlob,saveFile,get mode(){return mode},get sample(){return sample},get canUpload(){return mode!=="cloud"||!!assets},get canDownload(){return !!downloads||mode!=="cloud"}};
+})();
+
+/* external network reachability: blocked inside claude.ai artifacts by its security policy */
+const IN_CLAUDE = !!(window.claude && window.claude.use);
+/* minimal ZIP reader: stored (method 0) and deflate (method 8, via DecompressionStream) */
+async function readZip(file){
+  const buf=new Uint8Array(await file.arrayBuffer());const dv=new DataView(buf.buffer);
+  let eocd=-1;for(let i=buf.length-22;i>=Math.max(0,buf.length-65558);i--){if(dv.getUint32(i,true)===0x06054b50){eocd=i;break}}
+  if(eocd<0)throw new Error("Dosya geçerli bir ZIP değil.");
+  const count=dv.getUint16(eocd+10,true);let off=dv.getUint32(eocd+16,true);const out={};
+  for(let k=0;k<count;k++){
+    if(dv.getUint32(off,true)!==0x02014b50)throw new Error("ZIP dizini bozuk.");
+    const method=dv.getUint16(off+10,true),csize=dv.getUint32(off+20,true),nlen=dv.getUint16(off+28,true),xlen=dv.getUint16(off+30,true),clen=dv.getUint16(off+32,true),loff=dv.getUint32(off+42,true);
+    const name=new TextDecoder().decode(buf.subarray(off+46,off+46+nlen));
+    off+=46+nlen+xlen+clen;
+    if(name.endsWith("/"))continue;
+    const ln=dv.getUint16(loff+26,true),lx=dv.getUint16(loff+28,true);const start=loff+30+ln+lx;const data=buf.subarray(start,start+csize);
+    out[name]=async()=>{
+      if(method===0)return data.slice();
+      if(method===8){if(typeof DecompressionStream==="undefined")throw new Error("Bu cihaz sıkıştırılmış ZIP açamıyor. iOS’u güncelleyin.");
+        const ds=new Blob([data]).stream().pipeThrough(new DecompressionStream("deflate-raw"));return new Uint8Array(await new Response(ds).arrayBuffer())}
+      throw new Error("Desteklenmeyen ZIP sıkıştırması: "+method);
+    };
+  }
+  return out;
+}
+
+/* ------------------------------------------------------------------ image helpers */
+async function downscale(file,max=1600){
+  const url=URL.createObjectURL(file);
+  try{
+    const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});
+    const r=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+    const c=document.createElement("canvas");c.width=Math.round(img.naturalWidth*r);c.height=Math.round(img.naturalHeight*r);
+    c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+    return await new Promise(res=>c.toBlob(res,"image/jpeg",0.86));
+  }finally{URL.revokeObjectURL(url)}
+}
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.crossOrigin="anonymous";i.onload=()=>res(i);i.onerror=rej;i.src=src})}
+
+/* ------------------------------------------------------------------ prompts */
+function buildPrompts(p){
+  const facts=[];
+  if(p.floors.value)facts.push(`Building: ${p.floors.value}${p.floors.confirmed?"":" (unconfirmed)"}.`);
+  if(p.plotM2)facts.push(`Plot area ${p.plotM2} m².`);
+  const master = p.type==="empty_plot"
+    ? `Ultra photorealistic architectural visualization. A finished residential building on a ${p.plotM2||"?"} m² plot${p.floors.value?`, ${p.floors.value}`:""}. Use the uploaded empty plot photo for the exact camera angle and surroundings. Natural daylight, cinematic, 4K.`
+    : `${KEEP_BLOCK.ongoing_construction}\nThe same building finished: final facade, windows in the existing openings, roof completed as in the 3D render, landscaped garden, clean site.`;
+  return {master, stages:p.stages.map(s=>({key:s.key,image: s.key==="today"?"(gerçek fotoğraf — üretim gerekmez)": `${KEEP_BLOCK[p.type]}\n${facts.join(" ")}\n${s.desc}`})),
+    video: p.stages.slice(1).map((s,i)=>`${VIDEO_PROMPT}\nStart frame: ${p.stages[i].title}. End frame: ${s.title}. ${s.desc}`)};
+}
+function localPlan(p){
+  const has=r=>p.photos.filter(x=>x.role===r).length;
+  const lines=[];
+  lines.push(`Proje türü: ${p.type==="empty_plot"?"Boş arsa":"Devam eden inşaat"}`);
+  lines.push(`Fotoğraflar: ${p.photos.length} adet (boş arsa ${has("empty_plot")}, şantiye ön ${has("construction_front")}, havadan ${has("construction_aerial")+has("aerial")}, 3D ${has("render_3d")}, plan ${has("floor_plan")}).`);
+  if(p.type==="ongoing_construction"){
+    if(!has("construction_front"))lines.push("Eksik: sabit kamera için ön cepheden gerçek şantiye fotoğrafı.");
+    if(!has("render_3d"))lines.push("Eksik: tamamlanmış tasarımın kaynağı olacak 3D mimari görsel.");
+    lines.push("Kural: kat sayısı, pencere ve balkon açıklıkları, konum ve kamera açısı gerçek fotoğraftan alınır, değiştirilmez.");
+  }else{
+    if(!has("empty_plot"))lines.push("Eksik: kamera açısını belirleyecek boş arsa fotoğrafı.");
+    if(!p.plotM2)lines.push("Eksik: arsa metrekaresi.");
+  }
+  if(!p.floors.confirmed)lines.push(`Kat sayısı: ${p.floors.value||"girilmedi"} — onay bekliyor.`);
+  return lines.join("\n");
+}
+
+/* ------------------------------------------------------------------ local video composer (canvas + MediaRecorder) */
+function pickMime(){
+  const c=["video/mp4;codecs=avc1.42E01E","video/mp4;codecs=avc1","video/mp4","video/webm;codecs=vp9","video/webm"];
+  if(!window.MediaRecorder)return null;
+  return c.find(m=>{try{return MediaRecorder.isTypeSupported(m)}catch(e){return false}})||null;
+}
+async function composeVideo(p,{vertical,seconds,showPrices},onProgress){
+  const mime=pickMime();
+  if(!mime)throw new Error("Bu tarayıcı video kaydını desteklemiyor (MediaRecorder yok).");
+  const W=vertical?720:1280,H=vertical?1280:720;
+  const frames=[];
+  for(const s of p.stages){if(s.media){const u=await Store.resolveUrl(s.media);if(u){try{frames.push({img:await loadImg(u),title:s.title,status:s.status})}catch(e){}}}}
+  if(frames.length<2){
+    const pics=p.photos.filter(x=>x.role!=="floor_plan");
+    for(const ph of pics){const u=await Store.resolveUrl(ph.id);if(u){try{frames.push({img:await loadImg(u),title:ROLE_LABEL[ph.role]||"",status:"real"})}catch(e){}}}
+  }
+  if(!frames.length)throw new Error("Videoya konacak görsel yok. Önce fotoğraf yükleyin veya aşamalara görsel atayın.");
+  const c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
+  const stream=c.captureStream(30);
+  const rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:5_000_000});
+  const chunks=[];rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+  const done=new Promise(r=>rec.onstop=r);
+  const css=getComputedStyle(document.documentElement);
+  const ACC=css.getPropertyValue("--accent").trim()||"#e8661c";
+  const endCard=2.6, body=seconds-endCard, per=body/frames.length, xf=.6;
+  function cover(img,z,cx,cy){const r=Math.max(W/img.width,H/img.height)*z;const w=img.width*r,h=img.height*r;g.drawImage(img,W/2-w*cx,H/2-h*cy,w,h)}
+  function txt(s,x,y,size,col,weight=800,align="left"){g.font=`${weight} ${size}px Archivo, Helvetica, Arial, sans-serif`;g.textAlign=align;g.fillStyle="rgba(0,0,0,.45)";g.fillText(s,x+2,y+3);g.fillStyle=col;g.fillText(s,x,y)}
+  rec.start(250);
+  const t0=performance.now();
+  await new Promise(resolve=>{
+    function draw(){
+      const t=(performance.now()-t0)/1000;
+      g.fillStyle="#111";g.fillRect(0,0,W,H);
+      if(t<body){
+        const k=Math.min(frames.length-1,Math.floor(t/per)),u=(t-k*per)/per;
+        g.globalAlpha=1;cover(frames[k].img,1+.08*u,.5,.5);
+        if(k+1<frames.length&&u>1-xf/per){g.globalAlpha=(u-(1-xf/per))/(xf/per);cover(frames[k+1].img,1,.5,.5);g.globalAlpha=1}
+        const grd=g.createLinearGradient(0,H*.55,0,H);grd.addColorStop(0,"rgba(0,0,0,0)");grd.addColorStop(1,"rgba(0,0,0,.75)");g.fillStyle=grd;g.fillRect(0,H*.55,W,H*.45);
+        const pad=vertical?48:64;
+        txt(`${String(k+1).padStart(2,"0")} / ${String(frames.length).padStart(2,"0")}`,pad,H-(vertical?250:170),vertical?26:24,ACC,600);
+        txt(frames[k].title,pad,H-(vertical?200:120),vertical?52:56,"#fff");
+        if(frames[k].status==="generated")txt("AI görseli",W-pad,vertical?120:70,22,"#fff",600,"right");
+        // progress bar
+        g.fillStyle="rgba(255,255,255,.25)";g.fillRect(pad,H-(vertical?150:80),W-2*pad,6);g.fillStyle=ACC;g.fillRect(pad,H-(vertical?150:80),(W-2*pad)*Math.min(1,t/body),6);
+        if(t<2.4){g.globalAlpha=Math.max(0,1-Math.max(0,t-1.8)/.6);txt(p.name,pad,vertical?220:120,vertical?58:62,"#fff");if(p.location)txt(p.location,pad,vertical?270:165,vertical?28:28,"#fff",600);g.globalAlpha=1}
+      }else{
+        g.fillStyle="#141517";g.fillRect(0,0,W,H);
+        const a=Math.min(1,(t-body)/.5);g.globalAlpha=a;const cx=W/2;let y=vertical?H*.3:H*.24;
+        txt(p.brand||p.name,cx,y,vertical?60:64,"#fff",800,"center");y+=vertical?60:58;
+        if(p.location){txt(p.location,cx,y,28,"#d8d6d0",600,"center");y+=vertical?70:60}
+        if(showPrices){for(const un of p.units.slice(0,3)){txt(`${un.type}  ·  ${un.m2||"?"} m²  ·  ${fmtTL(un.price)}`,cx,y,vertical?34:32,"#fff",700,"center");y+=vertical?54:48}}
+        if(p.delivery){txt(p.delivery,cx,y+10,30,ACC,700,"center");y+=vertical?70:60}
+        if(p.phone){g.fillStyle=ACC;const w=vertical?520:520,h=84;g.beginPath();g.roundRect?g.roundRect(cx-w/2,y,w,h,42):g.rect(cx-w/2,y,w,h);g.fill();g.font=`800 44px Archivo, Arial, sans-serif`;g.textAlign="center";g.fillStyle="#1a0e05";g.fillText(p.phone,cx,y+57)}
+        g.globalAlpha=1;
+      }
+      onProgress(Math.min(1,t/seconds));
+      if(t<seconds)requestAnimationFrame(draw);else resolve();
+    }
+    requestAnimationFrame(draw);
+  });
+  rec.stop();await done;
+  const type=mime.split(";")[0];
+  return new Blob(chunks,{type});
+}
+
+/* ------------------------------------------------------------------ free AI image (optional, outside claude.ai only) */
+async function freeAiImage(prompt,vertical){
+  if(IN_CLAUDE)throw {code:"blocked",message:"claude.ai içinde harici servislere bağlantı güvenlik nedeniyle kapalı."};
+  const w=vertical?768:1344,h=vertical?1344:768;
+  const u=`https://image.pollinations.ai/prompt/${encodeURIComponent(prompt.slice(0,900))}?width=${w}&height=${h}&nologo=true&seed=${Math.floor(Math.random()*1e6)}`;
+  const r=await fetch(u);
+  if(r.status===402||r.status===429)throw {code:"quota",message:"Ücretsiz kota doldu veya hız sınırına takıldı. Ücretli işleme geçilmedi; daha sonra tekrar deneyin."};
+  if(!r.ok)throw {code:"http",message:"Servis yanıt vermedi ("+r.status+")."};
+  return await r.blob();
+}
+
+
+/* ------------------------------------------------------------------ AI timelapse: Hugging Face Space (free ZeroGPU quota) */
+const HF = {
+  space: "Lightricks/ltx-video-distilled",
+  model: "LTX-Video 0.9.8 13B distilled",
+  page: "https://huggingface.co/spaces/Lightricks/ltx-video-distilled",
+  tokensPage: "https://huggingface.co/settings/tokens",
+  base(){ return window.__BV_SPACE_URL || "https://lightricks-ltx-video-distilled.hf.space"; },
+  W: 576, H: 1024
+};
+const NEG = "worst quality, inconsistent motion, blurry, jittery, distorted, deformed building, changing architecture, extra floors";
+/* the token lives only in this device's storage; it is never written to code, the project record or the server */
+const Token = {
+  get(){ try{ return localStorage.getItem("bv_hf_token")||"" }catch(e){ return "" } },
+  set(t){ try{ t ? localStorage.setItem("bv_hf_token",t) : localStorage.removeItem("bv_hf_token") }catch(e){} },
+  masked(){ const t=Token.get(); return t ? t.slice(0,3)+"••••"+t.slice(-4) : "" }
+};
+function aiErr(code,message){ const e=new Error(message); e.code=code; return e; }
+function classifyAi(text,status){
+  const t=String(text||"").toLowerCase();
+  if(status===401||status===403||t.includes("invalid token")||t.includes("unauthorized")) return aiErr("auth","Hugging Face anahtarı geçersiz veya yetkisiz. Servisler ekranından yeni bir “Read” anahtarı girin.");
+  if(t.includes("quota")||t.includes("exceeded")||t.includes("gpu task aborted")||status===429) return aiErr("quota","Günlük ücretsiz GPU kotası doldu. Hugging Face kotayı ilk kullanımdan 24 saat sonra yeniler. Ücretli işleme geçilmedi; hiçbir ücret alınmadı.");
+  if(t.includes("sleep")||t.includes("paused")||status===503) return aiErr("space_down","Hugging Face Space şu an kapalı veya uyuyor. Birkaç dakika sonra tekrar deneyin.");
+  if(status===404) return aiErr("not_found","Space veya API adresi bulunamadı. Space taşınmış ya da değişmiş olabilir.");
+  return aiErr("failed","Üretim başarısız: "+(text||("HTTP "+status)));
+}
+function netErr(e){
+  if(e&&e.name==="AbortError") return aiErr("cancelled","Üretim iptal edildi.");
+  return aiErr("network","Hugging Face’e bağlanılamadı. Olası nedenler: internet bağlantısı yok, tarayıcı bu siteden gelen isteği engelledi (CORS) ya da Space erişilemiyor. Hiçbir video üretilmedi.");
+}
+async function toVertical(blob){
+  const u=URL.createObjectURL(blob);
+  try{
+    const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=u});
+    const c=document.createElement("canvas");c.width=HF.W;c.height=HF.H;const g=c.getContext("2d");
+    const r=Math.max(HF.W/img.width,HF.H/img.height);const w=img.width*r,h=img.height*r;
+    g.drawImage(img,(HF.W-w)/2,(HF.H-h)/2,w,h);
+    return await new Promise(res=>c.toBlob(res,"image/jpeg",0.92));
+  }finally{URL.revokeObjectURL(u)}
+}
+function verifyVideo(blob){
+  return new Promise((res,rej)=>{
+    const v=document.createElement("video");v.muted=true;v.playsInline=true;v.preload="metadata";
+    const u=URL.createObjectURL(blob);const done=(ok,val)=>{URL.revokeObjectURL(u);ok?res(val):rej(val)};
+    const t=setTimeout(()=>done(false,aiErr("invalid_video","Gelen dosya oynatılabilir bir video olarak doğrulanamadı.")),15000);
+    v.onloadedmetadata=()=>{clearTimeout(t);(isFinite(v.duration)&&v.duration>0)?done(true,{duration:v.duration,width:v.videoWidth,height:v.videoHeight}):done(false,aiErr("invalid_video","Gelen videonun süresi okunamadı."))};
+    v.onerror=()=>{clearTimeout(t);done(false,aiErr("invalid_video","Gelen dosya bu cihazda oynatılamıyor."))};
+    v.src=u;
+  });
+}
+async function hfImageToVideo({imageBlob,prompt,seconds,onStatus,signal}){
+  const token=Token.get();
+  if(!token) throw aiErr("no_token","Hugging Face anahtarı girilmedi. Servisler ekranından ekleyin.");
+  const base=HF.base(), auth={Authorization:"Bearer "+token};
+  let r;
+  onStatus("upload");
+  const fd=new FormData();fd.append("files",imageBlob,"kaynak.jpg");
+  try{ r=await fetch(base+"/gradio_api/upload",{method:"POST",headers:auth,body:fd,signal}) }catch(e){ throw netErr(e) }
+  if(!r.ok) throw classifyAi(await r.text().catch(()=>""),r.status);
+  const paths=await r.json();
+  const fileData={path:paths[0],orig_name:"kaynak.jpg",mime_type:"image/jpeg",meta:{_type:"gradio.FileData"}};
+  const data=[prompt,NEG,fileData,null,HF.H,HF.W,"image-to-video",seconds,9,42,true,1.0,true];
+  onStatus("queue");
+  try{ r=await fetch(base+"/gradio_api/call/image_to_video",{method:"POST",headers:{...auth,"Content-Type":"application/json"},body:JSON.stringify({data}),signal}) }catch(e){ throw netErr(e) }
+  if(!r.ok) throw classifyAi(await r.text().catch(()=>""),r.status);
+  const {event_id}=await r.json();
+  try{ r=await fetch(base+"/gradio_api/call/image_to_video/"+event_id,{headers:auth,signal}) }catch(e){ throw netErr(e) }
+  if(!r.ok) throw classifyAi(await r.text().catch(()=>""),r.status);
+  const reader=r.body.getReader(),dec=new TextDecoder();let buf="",result=null;
+  while(true){
+    let chunk; try{ chunk=await reader.read() }catch(e){ throw netErr(e) }
+    if(chunk.done) break;
+    buf+=dec.decode(chunk.value,{stream:true});
+    let i;
+    while((i=buf.indexOf("\n\n"))>=0){
+      const block=buf.slice(0,i);buf=buf.slice(i+2);
+      const ev=(block.match(/^event:\s*(.*)$/m)||[])[1];const dt=(block.match(/^data:\s*(.*)$/m)||[])[1];
+      if(ev==="generating") onStatus("generating");
+      else if(ev==="error") throw classifyAi(dt&&dt!=="null"?dt:"Space bir hata döndürdü (ayrıntı verilmedi; çoğunlukla kota dolduğunda olur).",0);
+      else if(ev==="complete"){ result=JSON.parse(dt); }
+    }
+    if(result) break;
+  }
+  if(!result) throw aiErr("failed","Space sonuç göndermeden bağlantıyı kapattı. Hiçbir video üretilmedi.");
+  const out=result[0]||{};const vid=out.video||out;
+  const url=vid.url||(vid.path?base+"/gradio_api/file="+vid.path:"");
+  if(!url) throw aiErr("failed","Space yanıtında video dosyası yok.");
+  onStatus("download");
+  try{ r=await fetch(url,{headers:auth,signal}) }catch(e){ throw netErr(e) }
+  if(!r.ok) throw classifyAi("Video dosyası indirilemedi",r.status);
+  const blob=await r.blob();
+  if(!blob.size) throw aiErr("invalid_video","Boş video dosyası geldi.");
+  onStatus("verify");
+  const meta=await verifyVideo(blob);
+  return {blob:new Blob([blob],{type:blob.type||"video/mp4"}),meta,seed:result[1]};
+}
+
+
+/* ------------------------------------------------------------------ AI film plan: same camera, chained clips */
+const KEEP_SCENE="Completely static camera, same viewpoint, same plot boundaries, same neighboring buildings and minaret in the background. Fast construction timelapse: workers and machines move quickly, shadows and clouds sweep across. Photorealistic.";
+const KEEP_BUILDING="Keep the building's shape, floor count, floor heights and window openings exactly the same.";
+const FILM_STAGES=[
+  {key:"dig1",title:"Hafriyat başlıyor",src:"empty",p:"A yellow excavator starts digging the empty plot, piles of soil grow, a dump truck arrives."},
+  {key:"dig2",title:"Hafriyat sürüyor",src:"chain",p:"The excavator deepens the foundation pit, dump trucks carry soil away, workers set survey stakes."},
+  {key:"found",title:"Temel",src:"chain",p:"Workers lay rebar mesh and formwork in the pit, a concrete mixer truck pours the foundation slab."},
+  {key:"cols",title:"Kolonlar",src:"chain",p:"Concrete columns rise from the foundation, workers fix formwork and rebar for the ground floor."},
+  {key:"floors",title:"Katlar yükseliyor",src:"chain",p:"Floor slabs are poured one after another, the concrete frame grows upward floor by floor, timber shoring under each slab."},
+  {key:"walls",title:"Duvar örülüyor",src:"site",p:"Workers lay red bricks between the concrete columns, walls fill in floor by floor. "+"KB"},
+  {key:"top",title:"Üst kat ve çatı iskeleti",src:"chain",p:"The top floor walls are finished and the roof timber structure is built on top. "+"KB"},
+  {key:"roof",title:"Çatı",src:"chain",p:"Workers cover the roof with dark grey shingles, metal scaffolding rises around the whole building. "+"KB"},
+  {key:"plaster",title:"Dış cephe sıvası",src:"chain",p:"White plaster spreads across the facade from top to bottom while workers stand on the scaffolding. "+"KB"},
+  {key:"windows",title:"Pencere ve korkuluk",src:"chain",p:"Black-framed windows are installed in every opening and black balcony railings are mounted, scaffolding is taken down. "+"KB"},
+  {key:"garden",title:"Bahçe düzenlemesi",src:"chain",p:"Debris is cleared, fresh lawn is rolled out, a black metal fence and garden lights are installed, small trees planted. "+"KB"},
+  {key:"done",title:"Anahtar teslim",src:"chain",p:"The finished white building stands complete in a clean landscaped garden, light turns warm and the garden lights switch on. "+"KB"}
+];
+const PICK={30:["dig1","found","cols","walls","plaster","garden"],60:FILM_STAGES.map(s=>s.key)};
+function filmPlan(p){
+  const secs=p.aiFilmSeconds||60;
+  let keys;
+  if(secs===90){keys=[];FILM_STAGES.forEach((s,i)=>{keys.push(s.key);if(i%2===1)keys.push(s.key+"_b")})}
+  else keys=PICK[secs]||PICK[60];
+  return keys.map((k,i)=>{
+    const base=FILM_STAGES.find(s=>s.key===k.replace(/_b$/,""));
+    const extra=k.endsWith("_b");
+    let src=base.src;
+    if(i===0&&src==="chain")src="empty";
+    if(extra)src="chain";
+    const promptText=(base.p+(extra?" The work continues further.":"")).replace("KB",p.type==="ongoing_construction"?KEEP_BUILDING:"")+" "+KEEP_SCENE;
+    return {key:k,title:base.title+(extra?" (devam)":""),src,prompt:promptText.trim()};
+  });
+}
+function lastFrame(blob){
+  return new Promise((res,rej)=>{
+    const v=document.createElement("video");v.muted=true;v.playsInline=true;v.preload="auto";
+    const u=URL.createObjectURL(blob);const fail=m=>{URL.revokeObjectURL(u);rej(aiErr("frame",m))};
+    const t=setTimeout(()=>fail("Önceki klibin son karesi alınamadı."),20000);
+    v.onloadedmetadata=()=>{v.currentTime=Math.max(0,v.duration-0.08)};
+    v.onseeked=()=>{clearTimeout(t);const c=document.createElement("canvas");c.width=HF.W;c.height=HF.H;const g=c.getContext("2d");
+      const r=Math.max(HF.W/v.videoWidth,HF.H/v.videoHeight);const w=v.videoWidth*r,h=v.videoHeight*r;g.drawImage(v,(HF.W-w)/2,(HF.H-h)/2,w,h);
+      c.toBlob(b=>{URL.revokeObjectURL(u);b?res(b):rej(aiErr("frame","Son kare kaydedilemedi."))},"image/jpeg",0.92)};
+    v.onerror=()=>{clearTimeout(t);fail("Önceki klip okunamadı.")};
+    v.src=u;
+  });
+}
+async function mergeClips(p,plan,onProgress){
+  const mime=pickMime();if(!mime)throw aiErr("no_recorder","Bu tarayıcı video kaydını desteklemiyor.");
+  const W=720,H=1280,XF=0.35,END=3;
+  const clips=plan.map(it=>(p.aiClips||[]).find(c=>c.key===it.key));
+  if(clips.some(c=>!c))throw aiErr("missing","Bütün klipler hazır değil.");
+  const vids=[];
+  for(const c of clips){const u=await Store.resolveUrl(c.id);const v=document.createElement("video");v.muted=true;v.playsInline=true;v.preload="auto";v.src=u;
+    await new Promise((res,rej)=>{v.onloadeddata=res;v.onerror=()=>rej(aiErr("clip","Bir klip açılamadı."))});vids.push(v)}
+  const total=vids.reduce((a,v)=>a+v.duration,0)+END;
+  const cv=document.createElement("canvas");cv.width=W;cv.height=H;const g=cv.getContext("2d");
+  const rec=new MediaRecorder(cv.captureStream(30),{mimeType:mime,videoBitsPerSecond:6_000_000});
+  const chunks=[];rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);const stopped=new Promise(r=>rec.onstop=r);
+  const ACC=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#e8661c";
+  const draw=v=>{const r=Math.max(W/v.videoWidth,H/v.videoHeight);const w=v.videoWidth*r,h=v.videoHeight*r;g.drawImage(v,(W-w)/2,(H-h)/2,w,h)};
+  const label=(t,a)=>{g.globalAlpha=a;g.fillStyle="rgba(0,0,0,.5)";g.fillRect(0,H-150,W,150);g.fillStyle="#fff";g.font="800 44px Archivo, Arial, sans-serif";g.textAlign="left";g.fillText(t,40,H-70);g.globalAlpha=1};
+  rec.start(250);
+  let elapsed=0;
+  for(let i=0;i<vids.length;i++){
+    const v=vids[i];v.currentTime=0;await v.play().catch(()=>{});
+    await new Promise(res=>{
+      const tick=()=>{
+        draw(v);
+        const nx=vids[i+1];
+        if(nx&&v.duration-v.currentTime<XF){if(nx.paused){nx.currentTime=0;nx.play().catch(()=>{})}g.globalAlpha=1-(v.duration-v.currentTime)/XF;draw(nx);g.globalAlpha=1}
+        label(plan[i].title,Math.min(1,v.currentTime/0.4));
+        g.fillStyle=ACC;g.fillRect(0,0,W*((elapsed+v.currentTime)/total),8);
+        onProgress((elapsed+v.currentTime)/total);
+        if(v.ended||v.currentTime>=v.duration-0.02)res();else requestAnimationFrame(tick);
+      };requestAnimationFrame(tick);
+    });
+    elapsed+=v.duration;
+  }
+  const last=vids[vids.length-1];const t0=performance.now();
+  await new Promise(res=>{const tick=()=>{const t=(performance.now()-t0)/1000;draw(last);g.fillStyle=`rgba(14,16,20,${Math.min(.82,t/.6)})`;g.fillRect(0,0,W,H);g.textAlign="center";g.fillStyle="#fff";
+    g.font="800 54px Archivo, Arial, sans-serif";g.fillText(p.brand||p.name,W/2,H*.38);g.font="600 30px Archivo, Arial, sans-serif";if(p.location)g.fillText(p.location,W/2,H*.38+56);
+    if(p.delivery){g.fillStyle=ACC;g.fillText(p.delivery,W/2,H*.38+120)}
+    if(p.phone){g.fillStyle=ACC;g.fillRect(W/2-250,H*.56,500,84);g.fillStyle="#1a0e05";g.font="800 44px Archivo, Arial, sans-serif";g.fillText(p.phone,W/2,H*.56+57)}
+    onProgress(Math.min(1,(elapsed+t)/total));if(t<END)requestAnimationFrame(tick);else res()};requestAnimationFrame(tick)});
+  rec.stop();await stopped;
+  const blob=new Blob(chunks,{type:mime.split(";")[0]});
+  const meta=await verifyVideo(blob);
+  return {blob,meta};
+}
+
+/* ------------------------------------------------------------------ icons */
+const I = {
+  cam:html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>`,
+  gal:html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 17-5-5-9 8"/></svg>`,
+  home:html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9H3z"/><path d="M9 20v-6h6v6"/></svg>`,
+  plus:html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>`,
+  plug:html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v5M15 3v5M7 8h10v4a5 5 0 0 1-10 0z"/><path d="M12 17v4"/></svg>`,
+  back:html`<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>`,
+};
+
+/* ------------------------------------------------------------------ UI pieces */
+function Chip({kind,children}){return html`<span class=${"chip "+(kind||"")}>${children}</span>`}
+function Img({id,className,alt}){
+  const [u,setU]=useState(Store.url(id));
+  useEffect(()=>{let on=true;Store.resolveUrl(id).then(x=>on&&setU(x));return()=>on=false},[id]);
+  return u?html`<img class=${className} src=${u} alt=${alt||""} loading="lazy"/>`:html`<div class=${className}></div>`;
+}
+function useToast(){const [t,setT]=useState(null);const show=useCallback(m=>{setT(m);clearTimeout(window.__tt);window.__tt=setTimeout(()=>setT(null),2600)},[]);return [t,show]}
+async function copyText(s,toast){try{await navigator.clipboard.writeText(s);toast("Kopyalandı")}catch(e){toast("Kopyalanamadı; metni basılı tutup seçin")}}
+
+/* ------------------------------------------------------------------ screens */
+function ProjectList({projects,open,create,show,setShow}){
+  const [name,setName]=useState(""),[type,setType]=useState("ongoing_construction");
+  return html`<div class="stack">
+    <div class="stack" style="gap:6px;padding-top:6px">
+      <span class="eyebrow">Projeler · ${projects.length}</span>
+      <h1>Sahadan videoya</h1>
+      <p class="muted">Fotoğrafları yükleyin, arsayı ve binayı tanımlayın, aşamaları yönetin, videoyu telefona indirin.</p>
+    </div>
+    <button class="primary block" onClick=${()=>setShow(true)}>${I.plus} Yeni proje</button>
+    <${ImportCard}/>
+    ${projects.length===0&&html`<div class="card stack"><h3>Henüz proje yok</h3><p class="muted">“Yeni proje” ile başlayın. Projeler kaydedilir; uygulamayı kapatıp açtığınızda kaybolmaz.</p></div>`}
+    <div class="plist">
+      ${projects.map(p=>{const cover=(p.photos.find(x=>x.role==="construction_front")||p.photos.find(x=>x.role==="render_3d")||p.photos[0]);
+        const done=p.stages.filter(s=>s.media).length;
+        return html`<button class="pcard" key=${p.id} onClick=${()=>open(p.id)}>
+          ${cover?html`<${Img} id=${cover.id} className="thumb"/>`:html`<div class="thumb"></div>`}
+          <div class="grow stack" style="gap:6px">
+            <h3>${p.name}</h3>
+            <div class="row" style="gap:6px">
+              <${Chip} kind=${p.type==="empty_plot"?"info":"warn"}>${p.type==="empty_plot"?"Boş arsa":"Devam eden inşaat"}<//>
+              ${p.plotM2&&html`<span class="mono muted">${p.plotM2} m²</span>`}
+            </div>
+            <span class="muted" style="font-size:.85rem">${p.photos.length} fotoğraf · ${done}/${p.stages.length} aşama görseli</span>
+          </div>
+        </button>`})}
+    </div>
+    ${show&&html`<div class="sheet" onClick=${e=>e.target===e.currentTarget&&setShow(false)}><div class="stack">
+      <h2>Yeni proje</h2>
+      <label class="f">Proje adı<input id="np-name" value=${name} onInput=${e=>setName(e.target.value)} placeholder="Örn. Değirmendere Konutları"/></label>
+      <div class="stack" style="gap:6px"><span class="f" style="font-weight:600">Proje türü</span>
+        <div class="seg">
+          <button aria-pressed=${type==="empty_plot"} onClick=${()=>setType("empty_plot")}>Boş arsa</button>
+          <button aria-pressed=${type==="ongoing_construction"} onClick=${()=>setType("ongoing_construction")}>Devam eden inşaat</button>
+        </div></div>
+      <button class="primary block" disabled=${!name.trim()} onClick=${()=>{create(name.trim(),type);setShow(false);setName("")}}>Projeyi oluştur</button>
+      <button class="ghost block" onClick=${()=>setShow(false)}>Vazgeç</button>
+    </div></div>`}
+  </div>`;
+}
+
+function ImportCard(){
+  const [st,setSt]=useState(""),[err,setErr]=useState(""),[ok,setOk]=useState(""),ref=useRef();
+  async function pick(f){
+    if(!f)return;setErr("");setOk("");setSt("Başlıyor");
+    try{const r=await Store.importProjectZip(f,setSt);setOk(`Proje bu cihaza aktarıldı (${r.files} dosya).`)}
+    catch(e){setErr(e.message||"İçe aktarılamadı.")}finally{setSt("")}
+  }
+  return html`<div class="card stack"><h3>Proje dosyasını içe aktar</h3>
+    <p class="muted" style="font-size:.9rem">Size özel proje ZIP’ini (ör. ProjeAdi_PRIVATE.zip) Dosyalar’dan seçin. Fotoğraflar ve bilgiler yalnızca bu cihaza kaydedilir; internete yüklenmez.</p>
+    <button class="block" disabled=${!!st} onClick=${()=>ref.current.click()}>${st?st+"…":"ZIP dosyası seç"}</button>
+    <input ref=${ref} id="import-zip" type="file" accept=".zip,application/zip,application/x-zip-compressed" hidden onChange=${e=>{pick(e.target.files[0]);e.target.value=""}}/>
+    ${ok&&html`<div class="notice ok">${ok}</div>`}${err&&html`<div class="notice bad">${err}</div>`}</div>`;
+}
+function InfoTab({p,update}){
+  const set=(k,v)=>update({...p,[k]:v});
+  const setUnit=(i,k,v)=>{const u=p.units.map((x,j)=>j===i?{...x,[k]:v}:x);set("units",u)};
+  return html`<div class="stack">
+    <div class="card stack">
+      <span class="eyebrow">Arsa</span>
+      <div class="big-m2"><input id="plot-m2" inputmode="decimal" value=${p.plotM2} onInput=${e=>set("plotM2",e.target.value.replace(/[^0-9.,]/g,""))} placeholder="0" aria-label="Arsa metrekaresi"/><span class="mono" style="font-size:1.3rem">m²</span></div>
+      <label class="f">Konum<input id="loc" value=${p.location} onInput=${e=>set("location",e.target.value)} placeholder="İlçe · Mahalle"/></label>
+    </div>
+    <div class="card stack">
+      <span class="eyebrow">Bina</span>
+      <label class="f">Kat sayısı / düzeni<input id="floors" value=${p.floors.value} onInput=${e=>set("floors",{...p.floors,value:e.target.value})} placeholder="Örn. zemin + 2 kat + çatı katı"/></label>
+      <div class="seg">
+        <button aria-pressed=${!p.floors.confirmed} onClick=${()=>set("floors",{...p.floors,confirmed:false})}>Onay bekliyor</button>
+        <button aria-pressed=${p.floors.confirmed} onClick=${()=>set("floors",{...p.floors,confirmed:true})}>Onaylandı</button>
+      </div>
+      <div class="two">
+        <label class="f">Toplam daire<input id="units-total" inputmode="numeric" value=${p.unitsTotal} onInput=${e=>set("unitsTotal",e.target.value)}/></label>
+        <label class="f">Teslim<input id="delivery" value=${p.delivery} onInput=${e=>set("delivery",e.target.value)} placeholder="Örn. 3 ay sonra"/></label>
+      </div>
+    </div>
+    <div class="card stack">
+      <span class="eyebrow">Satıştaki daireler</span>
+      ${p.units.map((u,i)=>html`<div class="unit" key=${i}>
+        <label class="f">Tip<input id=${"u-t-"+i} value=${u.type} onInput=${e=>setUnit(i,"type",e.target.value)}/></label>
+        <label class="f">m²<input id=${"u-m-"+i} inputmode="decimal" value=${u.m2} onInput=${e=>setUnit(i,"m2",e.target.value)}/></label>
+        <label class="f">Fiyat (₺)<input id=${"u-p-"+i} inputmode="numeric" value=${u.price} onInput=${e=>setUnit(i,"price",e.target.value.replace(/\D/g,""))}/></label>
+        <button class="icon ghost" aria-label="Daireyi sil" onClick=${()=>set("units",p.units.filter((_,j)=>j!==i))}>✕</button>
+      </div>`)}
+      <button onClick=${()=>set("units",[...p.units,{type:"2+1",m2:"",price:"",kind:""}])}>${I.plus} Daire ekle</button>
+    </div>
+    <div class="card stack">
+      <span class="eyebrow">Marka ve iletişim</span>
+      <label class="f">Firma<input id="brand" value=${p.brand} onInput=${e=>set("brand",e.target.value)}/></label>
+      <label class="f">Telefon<input id="phone" inputmode="tel" value=${p.phone} onInput=${e=>set("phone",e.target.value)}/></label>
+    </div>
+    ${p.claims.length>0&&html`<div class="card stack">
+      <span class="eyebrow">Tanıtım ifadeleri</span>
+      ${p.claims.map((c,i)=>html`<div class="row" key=${i}><span class="grow">${c.text}</span><${Chip} kind=${c.ok?"ok":"bad"}>${c.ok?"Doğrulandı":"Kullanılmayacak"}<//></div>`)}
+    </div>`}
+  </div>`;
+}
+
+function PhotosTab({p,update,toast}){
+  const camRef=useRef(),galRef=useRef();const [busy,setBusy]=useState(0);
+  async function add(files){
+    if(!Store.canUpload){toast("Bu görünümde fotoğraf yükleme izni yok");return}
+    const list=[...files];setBusy(list.length);let added=[];
+    for(const f of list){
+      try{const b=await downscale(f);const id=await Store.putBlob(b);added.push({id,role:p.type==="empty_plot"?"empty_plot":"construction_front",name:f.name||"foto.jpg",at:new Date().toISOString()})}
+      catch(e){toast((e&&e.message)||"Fotoğraf yüklenemedi")}
+      setBusy(x=>x-1);
+    }
+    if(added.length){update({...p,photos:[...p.photos,...added]});toast(added.length+" fotoğraf eklendi")}
+  }
+  const setRole=(i,role)=>update({...p,photos:p.photos.map((x,j)=>j===i?{...x,role}:x)});
+  return html`<div class="stack">
+    <div class="bigbtns">
+      <button class="primary" onClick=${()=>camRef.current.click()}>${I.cam}Fotoğraf çek</button>
+      <button onClick=${()=>galRef.current.click()}>${I.gal}Galeriden seç</button>
+    </div>
+    <input ref=${camRef} id="cam-input" type="file" accept="image/*" capture="environment" hidden onChange=${e=>{add(e.target.files);e.target.value=""}}/>
+    <input ref=${galRef} id="gal-input" type="file" accept="image/*" multiple hidden onChange=${e=>{add(e.target.files);e.target.value=""}}/>
+    ${busy>0&&html`<div class="notice info">${busy} fotoğraf hazırlanıyor ve kaydediliyor…</div>`}
+    <p class="muted" style="font-size:.9rem">Her fotoğrafın türünü seçin. Sabit kameralı video için boş arsa ve şantiye fotoğrafları aynı noktadan çekilmiş olmalı.</p>
+    <div class="pgrid">
+      ${p.photos.map((ph,i)=>html`<div class="ph" key=${ph.id}>
+        <${Img} id=${ph.id}/>
+        <select id=${"role-"+i} aria-label="Fotoğraf türü" value=${ph.role} onChange=${e=>setRole(i,e.target.value)}>
+          ${ROLES.map(([k,l])=>html`<option value=${k}>${l}</option>`)}
+        </select>
+      </div>`)}
+    </div>
+  </div>`;
+}
+
+function DesignTab({p,update,toast}){
+  const [busy,setBusy]=useState(false),[err,setErr]=useState(null),[live,setLive]=useState("");
+  const renders=p.photos.filter(x=>x.role==="render_3d"),plans=p.photos.filter(x=>x.role==="floor_plan");
+  const prompts=useMemo(()=>buildPrompts(p),[p]);
+  async function analyze(){
+    const sample=Store.sample;
+    if(!sample){update({...p,analysis:{text:localPlan(p),by:"Yerel kural tabanlı kontrol (Claude bağlantısı yok)",at:new Date().toISOString()}});return}
+    setBusy(true);setErr(null);setLive("");
+    try{
+      const lim=await sample.limits().catch(()=>null);
+      const max=(lim&&lim.images&&lim.images.maxCount)||0;
+      const order=["construction_front","empty_plot","render_3d","construction_aerial","aerial","floor_plan"];
+      const pick=[...p.photos].sort((a,b)=>order.indexOf(a.role)-order.indexOf(b.role)).slice(0,Math.min(max,6));
+      const images=[];for(const ph of pick){try{images.push(await Store.getBlob(ph.id))}catch(e){}}
+      const facts={tur:p.type,konum:p.location,arsa_m2:p.plotM2,kat:p.floors,toplam_daire:p.unitsTotal,satilik:p.units,teslim:p.delivery};
+      const prompt=`Sen bir mimari görselleştirme ve inşaat planlama uzmanısın. Türkçe yaz, düz metin, kısa başlıklar ve maddeler kullan.
+Proje bilgileri (JSON): ${JSON.stringify(facts)}
+Ekli fotoğraflar sırasıyla şu türlerde: ${pick.map((x,i)=>`${i+1}) ${ROLE_LABEL[x.role]}`).join(", ")}.
+Görevler:
+1. FOTOĞRAF ANALİZİ: Her fotoğrafta ne görüyorsun (kamera açısı, yapı durumu). Aynı noktadan çekilmiş fotoğraf çifti varsa belirt.
+2. KAT SAYISI: Gerçek fotoğraflar ile 3D görseli karşılaştır. Kesin değilse "ONAY BEKLİYOR" yaz ve nedenini söyle.
+3. MEVCUT AŞAMA ve kalan işler (devam eden inşaatsa).
+4. TASARIM PLANI: cephe, çatı, pencere, peyzaj. Devam eden inşaatta yeni mimari icat etme; gerçek fotoğraf ve 3D görsel kaynaktır.
+5. EKSİK BİLGİLER: Kullanıcıya sorulması gerekenler.
+Doğrulanamayan konum iddiaları (cadde, okul, deniz vb.) üretme.`;
+      const r=await sample(prompt,{images:images.length?images:undefined,modelTier:"complex",onText:({text})=>setLive(text)});
+      update({...p,analysis:{text:r.text,by:`Claude analizi · ${images.length} fotoğraf`,at:new Date().toISOString()},status:"Analiz edildi"});
+      setLive("");
+    }catch(e){
+      setErr(e&&e.code==="not_granted"?"Claude analizine izin verilmedi. Yerel kontrol kullanıldı.":"Analiz yapılamadı: "+((e&&e.message)||"bilinmeyen hata"));
+      update({...p,analysis:{text:localPlan(p),by:"Yerel kural tabanlı kontrol",at:new Date().toISOString()}});
+    }finally{setBusy(false)}
+  }
+  return html`<div class="stack">
+    <div class="card stack">
+      <div class="row"><h3 class="grow">Mimari analiz</h3>${p.analysis&&html`<${Chip} kind="ok">Kayıtlı<//>`}</div>
+      <p class="muted" style="font-size:.9rem">${Store.sample?"Fotoğraflarınızı Claude inceler; ek ücret yok.":"Claude bağlantısı bu görünümde yok; yerel kontrol listesi çalışır."}</p>
+      <button class="primary block" disabled=${busy} onClick=${analyze}>${busy?"Analiz ediliyor…":(p.analysis?"Yeniden analiz et":"Fotoğrafları analiz et")}</button>
+      ${err&&html`<div class="notice bad">${err}</div>`}
+      ${(live||p.analysis)&&html`<div class="stack" style="gap:6px"><span class="eyebrow">${live?"Yazılıyor…":p.analysis.by}</span><div class="analysis">${live||p.analysis.text}</div></div>`}
+    </div>
+    <div class="card stack">
+      <h3>Kat sayısı</h3>
+      <div class="row"><span class="grow">${p.floors.value||"Girilmedi"}</span><${Chip} kind=${p.floors.confirmed?"ok":"warn"}>${p.floors.confirmed?"Onaylandı":"Onay bekliyor"}<//></div>
+    </div>
+    ${renders.length>0&&html`<div class="card stack"><h3>Mimari görseller</h3><div class="pgrid">${renders.map(r=>html`<div class="ph" key=${r.id}><${Img} id=${r.id}/></div>`)}</div></div>`}
+    ${plans.length>0&&html`<div class="card stack"><h3>Kat planları</h3><div class="pgrid">${plans.map(r=>html`<div class="ph" key=${r.id}><${Img} id=${r.id}/></div>`)}</div></div>`}
+    <div class="card stack">
+      <h3>Tamamlanmış hâl promptu</h3>
+      <p class="muted" style="font-size:.9rem">Fotogerçekçi tamamlanmış görsel için. Ücretsiz bir görsel aracında referans fotoğraflarla kullanın.</p>
+      <pre class="prompt">${prompts.master}</pre>
+      <button onClick=${()=>copyText(prompts.master,toast)}>Promptu kopyala</button>
+    </div>
+  </div>`;
+}
+
+function StagesTab({p,update,toast,go}){
+  const prompts=useMemo(()=>buildPrompts(p),[p]);
+  const [pickFor,setPickFor]=useState(null),[busy,setBusy]=useState(null),upRef=useRef(),[upFor,setUpFor]=useState(null);
+  const setStage=(i,patch)=>update({...p,stages:p.stages.map((s,j)=>j===i?{...s,...patch}:s)});
+  async function tryAi(i){
+    setBusy(i);
+    try{const b=await freeAiImage(prompts.stages[i].image,true);const id=await Store.putBlob(b);setStage(i,{media:id,status:"generated"});toast("AI görseli eklendi")}
+    catch(e){setStage(i,{status:p.stages[i].media?p.stages[i].status:"failed",error:e.message||String(e)});toast(e.message||"Üretilemedi")}
+    finally{setBusy(null)}
+  }
+  async function upload(files){
+    const f=files&&files[0];if(!f||upFor==null)return;
+    try{const b=await downscale(f);const id=await Store.putBlob(b);setStage(upFor,{media:id,status:"external"});toast("Görsel eklendi")}catch(e){toast(e.message||"Yüklenemedi")}
+  }
+  const ready=p.stages.filter(s=>s.media).length;
+  return html`<div class="stack">
+    <div class="row"><div class="grow"><span class="eyebrow">İnşaat aşamaları</span><h2>${ready}/${p.stages.length} aşamada görsel var</h2></div></div>
+    ${IN_CLAUDE?html`<div class="notice">Bu görünümde AI görsel üretimi yapılamıyor: claude.ai güvenlik kuralı harici servislere bağlantıyı engelliyor. Aşamalara gerçek fotoğraf atayabilir veya başka bir araçta ürettiğiniz görseli yükleyebilirsiniz. Promptlar hazır.</div>`
+      :html`<div class="notice info">İsteğe bağlı ücretsiz AI görsel: anahtarsız, kotası sınırlı bir servis kullanılır. Kota dolarsa işlem durur; ücretli servise geçilmez. Bu görseller binayı birebir korumayabilir.</div>`}
+    ${p.stages.map((s,i)=>{const [k,l]=STATUS[s.status]||STATUS.planned;return html`<div class="card stack" key=${s.key}>
+      <div class="stage">
+        ${s.media?html`<${Img} id=${s.media} className="img"/>`:html`<div class="img">Görsel yok</div>`}
+        <div class="stack" style="gap:8px">
+          <span class="step">AŞAMA ${String(i+1).padStart(2,"0")}</span>
+          <h3>${s.title}</h3>
+          <${Chip} kind=${k}>${l}<//>
+          ${s.status==="failed"&&s.error&&html`<span class="muted" style="font-size:.82rem">${s.error}</span>`}
+        </div>
+      </div>
+      <div class="two">
+        <button onClick=${()=>setPickFor(i)}>Fotoğraf ata</button>
+        <button onClick=${()=>{setUpFor(i);upRef.current.click()}}>Görsel yükle</button>
+      </div>
+      ${s.key!=="today"&&html`<button disabled=${IN_CLAUDE||busy!=null} onClick=${()=>tryAi(i)}>${busy===i?"Üretiliyor…":"Ücretsiz AI ile dene"}</button>`}
+      ${s.key!=="today"&&html`<details><summary>Görsel promptu</summary><pre class="prompt">${prompts.stages[i].image}</pre><button class="block" style="margin-top:8px" onClick=${()=>copyText(prompts.stages[i].image,toast)}>Kopyala</button></details>`}
+      ${i>0&&html`<details><summary>Video geçiş promptu</summary><pre class="prompt">${prompts.video[i-1]}</pre><button class="block" style="margin-top:8px" onClick=${()=>copyText(prompts.video[i-1],toast)}>Kopyala</button></details>`}
+      ${s.media&&html`<button class="ghost" onClick=${()=>setStage(i,{media:null,status:"planned"})}>Görseli kaldır</button>`}
+    </div>`})}
+    <input ref=${upRef} id="stage-upload" type="file" accept="image/*" hidden onChange=${e=>{upload(e.target.files);e.target.value=""}}/>
+    <button class="primary block" onClick=${()=>go("video")}>Videoya geç</button>
+    ${pickFor!=null&&html`<div class="sheet" onClick=${e=>e.target===e.currentTarget&&setPickFor(null)}><div class="stack">
+      <h2>${p.stages[pickFor].title}: fotoğraf seç</h2>
+      ${p.photos.length===0&&html`<p class="muted">Önce Fotoğraflar sekmesinden fotoğraf ekleyin.</p>`}
+      <div class="pgrid">${p.photos.map(ph=>html`<button key=${ph.id} class="ph" style="padding:0;min-height:0" onClick=${()=>{setStage(pickFor,{media:ph.id,status:"real"});setPickFor(null)}}><${Img} id=${ph.id}/><span style="padding:8px;font-size:.82rem">${ROLE_LABEL[ph.role]}</span></button>`)}</div>
+      <button class="block" onClick=${()=>setPickFor(null)}>Kapat</button>
+    </div></div>`}
+  </div>`;
+}
+
+
+const AI_STEPS=[["upload","Fotoğraf Hugging Face’e gönderiliyor"],["queue","Sıraya alındı"],["generating","Video üretiliyor (GPU)"],["download","Video indiriliyor"],["verify","Video doğrulanıyor"]];
+function AiTimelapse({p,update,toast}){
+  const src=p.photos.find(x=>x.role==="construction_front")||p.photos.find(x=>x.role==="empty_plot");
+  const defPrompt = p.type==="ongoing_construction"
+    ? "Construction timelapse, completely static camera. Fast-moving workers on scaffolding plaster the facade of this exact building, a small crane lifts materials, a cement mixer turns, shadows and clouds move quickly. Keep the building's shape, floor count and window openings exactly the same. Photorealistic."
+    : "Construction timelapse, completely static camera. A yellow excavator digs the plot, a dump truck drives away with soil, workers lay out the foundation, shadows and clouds move quickly. Photorealistic.";
+  const [prompt,setPrompt]=useState(defPrompt);
+  const [step,setStep]=useState(null),[err,setErr]=useState(null),[res,setRes]=useState(null),[t0,setT0]=useState(0),[now,setNow]=useState(0);
+  const ctl=useRef(null);
+  const busy=step!==null;
+  const film=p.aiFilmSeconds||60;
+  const clips=p.aiClips||[];
+  useEffect(()=>{if(!busy)return;const i=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(i)},[busy]);
+  const hasToken=!!Token.get();
+  const blocked=IN_CLAUDE?"Bu özellik claude.ai içinde çalışmaz: güvenlik kuralı dış servislere bağlantıyı engelliyor. Ana ekrana eklediğiniz PWA sürümünde kullanın."
+    : !hasToken?"Hugging Face anahtarı girilmedi. Servisler ekranından ekleyin.":!src?"Kaynak fotoğraf yok. Fotoğraflar sekmesinde bir fotoğrafı “Şantiye (ön)” veya “Boş arsa” olarak işaretleyin.":null;
+  async function run(){
+    setErr(null);setRes(null);setT0(Date.now());setNow(Date.now());setStep("prepare");
+    const ac=new AbortController();ctl.current=ac;const kill=setTimeout(()=>ac.abort(),8*60*1000);
+    const log=(status,message)=>update({...p,aiTest:{status,message,at:new Date().toISOString(),model:HF.model,space:HF.space}});
+    try{
+      const img=await toVertical(await Store.getBlob(src.id));
+      const out=await hfImageToVideo({imageBlob:img,prompt,seconds:5,onStatus:setStep,signal:ac.signal});
+      const id=await Store.putBlob(out.blob);
+      const clip={id,seconds:Math.round(out.meta.duration*10)/10,width:out.meta.width,height:out.meta.height,prompt,source:src.id,model:HF.model,space:HF.space,seed:out.seed,verified:true,at:new Date().toISOString()};
+      update({...p,aiClips:[...clips,clip],aiTest:{status:"ok",message:`${clip.seconds} sn, ${clip.width}×${clip.height} video üretildi ve doğrulandı.`,at:clip.at,model:HF.model,space:HF.space}});
+      try{localStorage.setItem("bv_hf_last_ok",clip.at)}catch(e){}
+      setRes({url:URL.createObjectURL(out.blob),blob:out.blob,clip});toast("AI video üretildi");
+    }catch(e){
+      const m=e.message||String(e);setErr({code:e.code||"failed",message:m});log(e.code||"failed",m);
+    }finally{clearTimeout(kill);setStep(null);ctl.current=null}
+  }
+  const sec=busy?Math.max(0,Math.round((now-t0)/1000)):0;
+  const clipsNeeded=Math.ceil(film/5);
+  return html`<div class="card stack">
+    <div class="row"><h3 class="grow">Gerçekçi AI inşaat timelapse</h3><${Chip} kind=${blocked?"bad":"info"}>${blocked?"Kullanılamıyor":"Hazır · test bekliyor"}<//></div>
+    <div class="stack" style="gap:4px;font-size:.88rem">
+      <span><strong>Model:</strong> ${HF.model}</span>
+      <span><strong>Servis:</strong> Hugging Face Space · <span class="mono">${HF.space}</span></span>
+      <span class="muted">Ücretsiz Hugging Face hesabıyla günde 5 GPU dakikası. Kota dolunca üretim durur; ücretli işleme geçilmez.</span>
+    </div>
+    ${blocked&&html`<div class="notice bad">${blocked}</div>`}
+    <span class="eyebrow">Film süresi</span>
+    <div class="seg" style="grid-template-columns:repeat(3,1fr)">${[30,60,90].map(n=>html`<button key=${n} aria-pressed=${film===n} onClick=${()=>update({...p,aiFilmSeconds:n})}>${n} sn</button>`)}</div>
+    <p class="muted" style="font-size:.85rem">${film} sn için ${clipsNeeded} adet 5 saniyelik AI klip gerekir. Plan klipleri: ${clips.filter(c=>c.key).length}. Ücretsiz kotayla günde birkaç klip üretilebilir (kesin sayı ilk testte görülecek). Önce aşağıdaki 5 saniyelik testi çalıştırın.</p>
+    <span class="eyebrow">5 saniyelik test</span>
+    <div class="stage">
+      ${src?html`<${Img} id=${src.id} className="img"/>`:html`<div class="img">Kaynak yok</div>`}
+      <label class="f" style="min-width:0">Hareket tarifi (İngilizce)
+        <textarea id="ai-prompt" value=${prompt} onInput=${e=>setPrompt(e.target.value)} style="min-height:150px;font-size:.85rem"></textarea></label>
+    </div>
+    <button class="primary block" disabled=${!!blocked||busy} onClick=${run}>${busy?`Üretiliyor… ${sec} sn`:"5 sn AI video üret"}</button>
+    ${busy&&html`<div class="stack" style="gap:6px">
+      ${AI_STEPS.map(([k,l])=>{const idx=AI_STEPS.findIndex(x=>x[0]===step),me=AI_STEPS.findIndex(x=>x[0]===k);
+        return html`<div class="row" key=${k} style="gap:8px"><${Chip} kind=${me<idx?"ok":me===idx?"info":""}>${me<idx?"Tamam":me===idx?"Şimdi":"Bekliyor"}<//><span style="font-size:.9rem">${l}</span></div>`})}
+      <button class="ghost" onClick=${()=>ctl.current&&ctl.current.abort()}>İptal et</button>
+    </div>`}
+    ${err&&html`<div class="notice bad stack" style="gap:6px"><strong>Video üretilemedi.</strong><span>${err.message}</span><span class="mono muted" style="font-size:.75rem">kod: ${err.code}</span></div>`}
+    ${!busy&&!err&&!res&&p.aiTest&&html`<div class=${"notice "+(p.aiTest.status==="ok"?"ok":"bad")}>Son deneme (${new Date(p.aiTest.at).toLocaleString("tr-TR")}): ${p.aiTest.status==="ok"?p.aiTest.message:"başarısız — "+p.aiTest.message}</div>`}
+    ${res&&html`<div class="stack"><div class="notice ok">Gerçek AI video üretildi ve cihazda oynatılarak doğrulandı: ${res.clip.seconds} sn, ${res.clip.width}×${res.clip.height}.</div>
+      <video class="out" src=${res.url} controls playsinline autoplay muted loop></video>
+      <button class="primary block" onClick=${async()=>{try{const r=await Store.saveFile(res.blob,slug(p.name)+"-ai-test-5sn.mp4");toast(r&&r.status==="shared"?"Paylaşım menüsü açıldı":"Kaydedildi")}catch(e){toast("Kaydedilemedi")}}}>Telefona kaydet</button></div>`}
+    ${clips.filter(c=>!c.key).length>0&&html`<div class="stack"><span class="eyebrow">Test klipleri · ${clips.filter(c=>!c.key).length}</span>${clips.filter(c=>!c.key).map(c=>html`<div class="stack" key=${c.id} style="gap:6px"><${OutVideo} id=${c.id}/><span class="muted" style="font-size:.82rem">${c.seconds} sn · ${c.model} · ${new Date(c.at).toLocaleString("tr-TR")}</span></div>`)}</div>`}
+    <${FilmPlan} p=${p} update=${update} toast=${toast}/>
+  </div>`;
+}
+function FilmPlan({p,update,toast}){
+  const plan=filmPlan(p);const clips=p.aiClips||[];const errs=p.aiErrors||{};
+  const tested=p.aiTest&&p.aiTest.status==="ok";
+  const empty=p.photos.find(x=>x.role==="empty_plot");const site=p.photos.find(x=>x.role==="construction_front");
+  const [busyKey,setBusyKey]=useState(null),[step,setStep]=useState(null),[auto,setAuto]=useState(false),[merge,setMerge]=useState(null),[mergeErr,setMergeErr]=useState(null),[final,setFinal]=useState(null);
+  const ref=useRef(p);if(ref.current.id!==p.id||(p.aiClips||[]).length>=(ref.current.aiClips||[]).length)ref.current=p;
+  const commit=np=>{ref.current=np;update(np)};const stopRef=useRef(false),ctl=useRef(null);
+  const clipFor=k=>(ref.current.aiClips||[]).find(c=>c.key===k);
+  const ready=plan.filter(it=>clips.some(c=>c.key===it.key)).length;
+  async function sourceFor(i){
+    const it=plan[i];
+    if(it.src==="empty"){if(!empty)throw aiErr("no_source","Boş arsa fotoğrafı yok (Fotoğraflar’da “Boş arsa” olarak işaretleyin).");return toVertical(await Store.getBlob(empty.id))}
+    if(it.src==="site"){if(!site)throw aiErr("no_source","Şantiye (ön) fotoğrafı yok.");return toVertical(await Store.getBlob(site.id))}
+    const prev=clipFor(plan[i-1].key);if(!prev)throw aiErr("need_prev","Önce bir önceki klip üretilmeli; bu klip onun son karesinden devam eder.");
+    return lastFrame(await Store.getBlob(prev.id));
+  }
+  async function gen(i){
+    const it=plan[i];setBusyKey(it.key);setStep("prepare");
+    const ac=new AbortController();ctl.current=ac;const kill=setTimeout(()=>ac.abort(),8*60*1000);
+    try{
+      const img=await sourceFor(i);
+      const out=await hfImageToVideo({imageBlob:img,prompt:it.prompt,seconds:5,onStatus:setStep,signal:ac.signal});
+      const id=await Store.putBlob(out.blob);
+      const cur=ref.current;const e2={...(cur.aiErrors||{})};delete e2[it.key];
+      const clip={id,key:it.key,seconds:Math.round(out.meta.duration*10)/10,width:out.meta.width,height:out.meta.height,prompt:it.prompt,model:HF.model,space:HF.space,verified:true,at:new Date().toISOString()};
+      commit({...cur,aiClips:[...(cur.aiClips||[]).filter(c=>c.key!==it.key),clip],aiErrors:e2});
+      return true;
+    }catch(e){
+      const cur=ref.current;commit({...cur,aiErrors:{...(cur.aiErrors||{}),[it.key]:{code:e.code||"failed",message:e.message||String(e),at:new Date().toISOString()}}});
+      if(e.code==="quota"||e.code==="auth"||e.code==="network"||e.code==="cancelled")stopRef.current=true;
+      return false;
+    }finally{clearTimeout(kill);setBusyKey(null);setStep(null);ctl.current=null}
+  }
+  async function runAll(){
+    setAuto(true);stopRef.current=false;
+    for(let i=0;i<plan.length;i++){
+      if(stopRef.current)break;
+      if(clipFor(plan[i].key))continue;
+      const ok=await gen(i);if(!ok)break;
+    }
+    setAuto(false);
+  }
+  async function doMerge(){
+    setMergeErr(null);setFinal(null);setMerge(0);
+    try{
+      const out=await mergeClips(ref.current,plan,setMerge);
+      const id=await Store.putBlob(out.blob);const ext=out.blob.type.includes("mp4")?"mp4":"webm";
+      const cur=ref.current;
+      commit({...cur,outputs:[...cur.outputs,{id,label:`AI inşaat timelapse 9:16 · ${Math.round(out.meta.duration)} sn`,kind:"ai",ext,at:new Date().toISOString(),note:`${plan.length} adet gerçek AI klipten (${HF.model}) birleştirildi ve oynatılarak doğrulandı.`}]});
+      setFinal({url:URL.createObjectURL(out.blob),blob:out.blob,ext,meta:out.meta});
+    }catch(e){setMergeErr(e.message||String(e))}finally{setMerge(null)}
+  }
+  const nextIdx=plan.findIndex(it=>!clips.some(c=>c.key===it.key));
+  const locked=!tested;
+  return html`<div class="stack" style="border-top:1px solid var(--line);padding-top:14px">
+    <div class="row"><h3 class="grow">${p.aiFilmSeconds||60} sn film planı</h3><${Chip} kind=${locked?"warn":ready===plan.length?"ok":"info"}>${locked?"Test bekleniyor":`${ready}/${plan.length} klip`}<//></div>
+    ${locked?html`<div class="notice">Film üretimi, yukarıdaki 5 saniyelik test başarılı olduktan sonra açılır. Henüz başarılı bir gerçek AI üretimi yok.</div>`
+      :html`<p class="muted" style="font-size:.88rem">Erken aşamalar boş arsa fotoğrafından, “Duvar örülüyor” gerçek şantiye fotoğrafından başlar; diğer klipler bir önceki klibin son karesinden devam eder. Kamera sabittir. AI modeli binayı her klipte birebir korumayabilir; sonucu izleyerek kontrol edin.</p>`}
+    ${plan.map((it,i)=>{const c=clips.find(x=>x.key===it.key);const er=errs[it.key];const me=busyKey===it.key;
+      const srcLabel=it.src==="empty"?"Boş arsa fotoğrafından":it.src==="site"?"Gerçek şantiye fotoğrafından":"Önceki klibin son karesinden";
+      return html`<div class="stack" key=${it.key} style="gap:6px;padding-block:8px;border-top:1px solid var(--line)">
+        <div class="row"><span class="step">${String(i+1).padStart(2,"0")}</span><strong class="grow">${it.title}</strong>
+          <${Chip} kind=${c?"ok":me?"info":er?"bad":""}>${c?"Hazır · doğrulandı":me?"Üretiliyor":er?"Üretilemedi":"Bekliyor"}<//></div>
+        <span class="muted" style="font-size:.8rem">${srcLabel}</span>
+        ${me&&html`<span class="muted" style="font-size:.85rem">${(AI_STEPS.find(x=>x[0]===step)||["","Hazırlanıyor"])[1]}…</span>`}
+        ${er&&!c&&!me&&html`<span style="font-size:.85rem;color:var(--bad)">${er.message}</span>`}
+        ${c&&html`<${OutVideo} id=${c.id}/><button class="ghost" disabled=${!!busyKey||auto} onClick=${()=>{const cur=ref.current;commit({...cur,aiClips:(cur.aiClips||[]).filter(x=>x.key!==it.key)})}}>Klibi sil (yeniden üretmek için)</button>`}
+        ${!locked&&!c&&html`<button disabled=${!!busyKey||auto||IN_CLAUDE||(i>0&&plan[i].src==="chain"&&!clips.some(x=>x.key===plan[i-1].key))} onClick=${()=>{stopRef.current=false;gen(i)}}>Bu klibi üret</button>`}
+      </div>`})}
+    ${!locked&&html`<div class="stack">
+      ${auto?html`<button class="block" onClick=${()=>{stopRef.current=true;ctl.current&&ctl.current.abort()}}>Durdur</button>`
+        :html`<button class="primary block" disabled=${!!busyKey||nextIdx<0||IN_CLAUDE} onClick=${runAll}>${nextIdx<0?"Bütün klipler hazır":"Kalan klipleri sırayla üret (kota bitene kadar)"}</button>`}
+      <p class="muted" style="font-size:.82rem">Kota dolarsa üretim durur ve kaldığı yer kaydedilir. Ertesi gün aynı düğmeyle devam edebilirsiniz.</p>
+      <button class="primary block" disabled=${ready<plan.length||merge!==null||!!busyKey} onClick=${doMerge}>${merge!==null?`Birleştiriliyor… %${Math.round(merge*100)}`:ready<plan.length?`Birleştirmek için ${plan.length-ready} klip daha gerekli`:`${p.aiFilmSeconds||60} sn filmi birleştir (9:16)`}</button>
+      ${merge!==null&&html`<div class="progress"><div style=${{width:(merge*100)+"%"}}></div></div><p class="muted" style="font-size:.82rem">Birleştirme gerçek zamanlıdır; ekranı açık tutun.</p>`}
+      ${mergeErr&&html`<div class="notice bad">Film birleştirilemedi: ${mergeErr}</div>`}
+      ${final&&html`<div class="stack"><div class="notice ok">Film birleştirildi ve oynatılarak doğrulandı: ${Math.round(final.meta.duration)} sn, ${final.meta.width}×${final.meta.height}, ${final.ext.toUpperCase()}.</div>
+        <video class="out" src=${final.url} controls playsinline></video>
+        <button class="primary block" onClick=${async()=>{try{const r=await Store.saveFile(final.blob,slug(p.name)+"-ai-timelapse."+final.ext);toast(r&&r.status==="shared"?"Paylaşım menüsü açıldı":"Kaydedildi")}catch(e){toast("Kaydedilemedi")}}}>Telefona kaydet</button></div>`}
+    </div>`}
+  </div>`;
+}
+
+function VideoTab({p,update,toast}){
+  const [vertical,setVertical]=useState(true),[seconds,setSeconds]=useState(20),[prices,setPrices]=useState(true);
+  const [prog,setProg]=useState(0),[busy,setBusy]=useState(false),[result,setResult]=useState(null),[err,setErr]=useState(null);
+  const mime=pickMime();
+  async function make(){
+    setBusy(true);setErr(null);setResult(null);setProg(0);
+    try{
+      const blob=await composeVideo(p,{vertical,seconds,showPrices:prices},setProg);
+      const ext=blob.type.includes("mp4")?"mp4":"webm";
+      const url=URL.createObjectURL(blob);
+      setResult({blob,url,ext});
+      try{const id=await Store.putBlob(blob);update({...p,outputs:[...p.outputs,{id,label:`Yerel kurgu ${vertical?"9:16":"16:9"} · ${seconds} sn`,kind:"local",ext,at:new Date().toISOString(),note:"Fotoğraflardan hazırlanan kurgu; AI video değildir."}]})}catch(e){}
+    }catch(e){setErr(e.message||String(e))}finally{setBusy(false)}
+  }
+  async function saveOut(o){
+    try{const b=o.blob||await Store.getBlob(o.id);const name=slug(p.name)+"-"+(o.label?slug(o.label):"video")+"."+(o.ext||"mp4");const r=await Store.saveFile(b,name);toast(r&&r.status==="shared"?"Paylaşım menüsü açıldı":"Kaydedildi")}
+    catch(e){toast(e&&e.code==="declined"?"Kaydetme iptal edildi":(e&&e.code==="too_large"?"Dosya çok büyük":"Kaydedilemedi"))}
+  }
+  return html`<div class="stack">
+    <${Guard}><${AiTimelapse} p=${p} update=${update} toast=${toast}/><//>
+    <h3 style="margin-top:8px">Fotoğraflı tanıtım videosu</h3>
+    <div class="notice info">Bu bölüm AI video değildir: aşamalara atadığınız fotoğraf ve görselleri cihazınızda geçişli bir tanıtım videosuna dönüştürür.</div>
+    <div class="card stack">
+      <span class="eyebrow">Format</span>
+      <div class="seg"><button aria-pressed=${vertical} onClick=${()=>setVertical(true)}>Dikey 9:16</button><button aria-pressed=${!vertical} onClick=${()=>setVertical(false)}>Yatay 16:9</button></div>
+      <span class="eyebrow">Süre</span>
+      <div class="seg"><button aria-pressed=${seconds===20} onClick=${()=>setSeconds(20)}>20 sn</button><button aria-pressed=${seconds===30} onClick=${()=>setSeconds(30)}>30 sn</button></div>
+      <div class="seg"><button aria-pressed=${prices} onClick=${()=>setPrices(true)}>Fiyatları göster</button><button aria-pressed=${!prices} onClick=${()=>setPrices(false)}>Fiyatsız</button></div>
+      <p class="muted" style="font-size:.85rem">Kayıt formatı: <span class="mono">${mime?mime.split(";")[0]:"desteklenmiyor"}</span>. Kayıt gerçek zamanlıdır; ${seconds} saniye boyunca ekranı açık tutun.</p>
+      <button class="primary block" disabled=${busy||!mime} onClick=${make}>${busy?`Kaydediliyor… %${Math.round(prog*100)}`:"Video oluştur"}</button>
+      ${busy&&html`<div class="progress"><div style=${{width:(prog*100)+"%"}}></div></div>`}
+      ${err&&html`<div class="notice bad">${err}</div>`}
+    </div>
+    ${result&&html`<div class="card stack"><h3>Yeni video</h3><video class="out" src=${result.url} controls playsinline></video>
+      <button class="primary block" onClick=${()=>saveOut({blob:result.blob,ext:result.ext,label:"yeni"})}>Telefona kaydet</button></div>`}
+    ${p.outputs.length>0&&html`<div class="card stack"><h3>Kayıtlı videolar</h3>
+      ${p.outputs.map((o,i)=>html`<div class="stack" key=${o.id} style="gap:8px;border-top:${i?"1px solid var(--line)":"0"};padding-top:${i?"12px":"0"}">
+        <div class="row"><span class="grow" style="font-weight:600">${o.label}</span><${Chip} kind=${o.kind==="ai"?"info":"ok"}>${o.kind==="ai"?"AI video":"Hazır"}<//></div>
+        ${o.note&&html`<span class="muted" style="font-size:.85rem">${o.note}</span>`}
+        <${OutVideo} id=${o.id}/>
+        <button class="block" disabled=${!Store.canDownload} onClick=${()=>saveOut(o)}>Telefona kaydet</button>
+      </div>`)}
+    </div>`}
+  </div>`;
+}
+function OutVideo({id}){const [u,setU]=useState("");useEffect(()=>{Store.resolveUrl(id).then(setU)},[id]);return u?html`<video class="out" src=${u} controls playsinline preload="metadata"></video>`:null}
+
+function TokenCard(){
+  const [v,setV]=useState(""),[m,setM]=useState(Token.masked());
+  if(IN_CLAUDE)return html`<div class="card stack"><h3>Hugging Face anahtarı</h3><p class="muted" style="font-size:.9rem">Anahtar yalnızca ana ekrana eklenen PWA sürümünde girilir. claude.ai içinde AI video çalışmaz.</p></div>`;
+  return html`<div class="card stack"><h3>Hugging Face anahtarı</h3>
+    <p class="muted" style="font-size:.9rem">Anahtar yalnızca bu telefonda saklanır. Koda, GitHub deposuna veya proje kaydına yazılmaz; yalnızca Hugging Face’e gönderilir. “Read” yetkili anahtar yeterlidir; istediğiniz an Hugging Face’ten silebilirsiniz.</p>
+    ${m?html`<div class="row"><span class="mono grow">${m}</span><button onClick=${()=>{Token.set("");setM("")}}>Anahtarı sil</button></div>`
+      :html`<label class="f">Anahtar (hf_ ile başlar)<input id="hf-token" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" value=${v} onInput=${e=>setV(e.target.value.trim())}/></label>
+        <button class="primary block" disabled=${!/^hf_[A-Za-z0-9]{20,}$/.test(v)} onClick=${()=>{Token.set(v);setV("");setM(Token.masked())}}>Anahtarı kaydet</button>
+        <a class="muted" href=${HF.tokensPage} target="_blank" rel="noopener" style="font-size:.88rem">Anahtar oluşturma sayfası: huggingface.co/settings/tokens</a>`}
+  </div>`;
+}
+function Services(){
+  const mime=pickMime();
+  let lastOk=null;try{lastOk=localStorage.getItem("bv_hf_last_ok")}catch(e){}
+  const rows=[
+    ["Proje kaydı",Store.mode==="cloud"?["ok","Bulutta, kalıcı"]:Store.mode==="device"?["ok","Bu cihazda, kalıcı"]:["bad","Geçici (kaydedilmez)"],"Projeler uygulama kapanınca kaybolmaz."],
+    ["Fotoğraf deposu",Store.canUpload?["ok","Hazır"]:["bad","İzin yok"],"Fotoğraflar 1600 px JPEG olarak saklanır."],
+    ["Mimari analiz (Claude)",Store.sample?["ok","Bağlı · ücretsiz"]:["warn","Yok · yerel kontrol"],"Fotoğrafları inceler, kat sayısını karşılaştırır, eksikleri listeler."],
+    ["AI görsel üretimi",IN_CLAUDE?["bad","Bu görünümde engelli"]:["warn","İsteğe bağlı · ücretsiz kota"],IN_CLAUDE?"claude.ai harici bağlantıya izin vermiyor. Kendi adresinde çalışan PWA sürümünde isteğe bağlı açılır.":"Anahtarsız ücretsiz servis; kota dolunca durur, ücretli işleme geçmez. Binayı birebir korumayabilir."],
+    ["AI video üretimi (Hugging Face)",IN_CLAUDE?["bad","Bu görünümde engelli"]:!Token.get()?["warn","Anahtar gerekli"]:lastOk?["ok","Son test başarılı"]:["warn","Bağlı · henüz test edilmedi"],IN_CLAUDE?"claude.ai dış servislere bağlantıya izin vermiyor. PWA sürümünde çalışır.":"Model: "+HF.model+". Ücretsiz hesapla günde 5 GPU dakikası; kota dolunca durur, ücret alınmaz."],
+    ["Video kurgu (cihazda)",mime?["ok",mime.includes("mp4")?"MP4":"WebM"]:["bad","Desteklenmiyor"],"Aşama görsellerinden geçişli, yazılı video hazırlar."],
+    ["Telefona indirme",Store.canDownload?["ok","Hazır"]:["bad","İzin yok"],"Kaydet dediğinizde onay sorulur."],
+  ];
+  return html`<div class="stack">
+    <div class="stack" style="gap:6px;padding-top:6px"><span class="eyebrow">Bağlantılar</span><h1>Servis durumu</h1>
+      <p class="muted">Hiçbir özellik ücretli servis gerektirmez. Kullanılamayanlar açıkça işaretlidir.</p></div>
+    <div class="card">${rows.map(([n,[k,l],d])=>html`<div class="svc" key=${n}><span style="font-weight:600">${n}</span><${Chip} kind=${k}>${l}<//><span class="muted" style="grid-column:1/-1;font-size:.88rem">${d}</span></div>`)}</div>
+    <${TokenCard}/>
+    <div class="card stack"><h3>Ana ekrana ekleme</h3>
+      <p class="muted" style="font-size:.92rem">${IN_CLAUDE?"Bu sürüm claude.ai içinde çalışır ve gerçek PWA olarak kurulamaz. Ana ekrandan açılan uygulama için aynı dosyanın PWA paketi ücretsiz bir adreste yayınlanmalıdır.":"Safari’de Paylaş → “Ana Ekrana Ekle”."}</p></div>
+  </div>`;
+}
+
+/* ------------------------------------------------------------------ error boundary: a failing screen never blanks the whole app */
+class Guard extends React.Component{
+  constructor(p){super(p);this.state={err:null}}
+  static getDerivedStateFromError(err){return {err}}
+  componentDidCatch(err){try{console.error("BuildVision ekran hatası:",err)}catch(e){}}
+  render(){
+    if(this.state.err)return html`<div class="notice bad stack" style="gap:10px"><strong>Bu bölüm açılamadı.</strong><span style="font-size:.88rem">${String(this.state.err&&this.state.err.message||this.state.err)}</span><button onClick=${()=>this.setState({err:null})}>Tekrar dene</button></div>`;
+    return this.props.children;
+  }
+}
+/* ------------------------------------------------------------------ app shell */
+function App(){
+  const [ready,setReady]=useState(false),[projects,setProjects]=useState([]),[loadErr,setLoadErr]=useState(null);
+  const [openId,setOpenId]=useState(null),[tab,setTab]=useState("info"),[view,setView]=useState("home");
+  const [toastMsg,toast]=useToast();
+  const [showNew,setShowNew]=useState(false);
+  const pending=useRef({}),timers=useRef({});
+  useEffect(()=>{let unsub;Store.init().then(()=>{setReady(true);unsub=Store.subscribe((list,e)=>{if(e){setLoadErr("Projeler yüklenemedi: "+(e.message||e.code));return}
+    setProjects(list.map(x=>pending.current[x.id]||x).sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||"")))})});return()=>unsub&&unsub()},[]);
+  const update=useCallback(np=>{
+    pending.current[np.id]=np;
+    setProjects(ps=>ps.map(x=>x.id===np.id?np:x));
+    clearTimeout(timers.current[np.id]);
+    timers.current[np.id]=setTimeout(async()=>{try{await Store.save(np)}catch(e){toast("Kaydedilemedi: "+(e.message||e.code))}finally{if(pending.current[np.id]===np)delete pending.current[np.id]}},600);
+  },[toast]);
+  async function create(name,type){const p=newProject(name,type);setProjects(ps=>[p,...ps]);try{await Store.save(p)}catch(e){toast("Kaydedilemedi")}setOpenId(p.id);setTab("photos");setView("home")}
+  const p=projects.find(x=>x.id===openId);
+  const TABS=[["info","Bilgi"],["photos","Fotoğraflar"],["design","Tasarım"],["stages","Aşamalar"],["video","Video"]];
+  return html`<div>
+    <header class="top">
+      ${p&&view==="home"?html`<button class="icon ghost" aria-label="Projelere dön" onClick=${()=>setOpenId(null)}>${I.back}</button>
+        <div class="grow"><span class="eyebrow">${p.type==="empty_plot"?"Boş arsa":"Devam eden inşaat"}${p.plotM2?" · "+p.plotM2+" m²":""}</span><h2 style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</h2></div>`
+      :html`<div class="brandmark grow"><div class="logo">BV</div><div><h3>BuildVision AI</h3><span class="muted" style="font-size:.78rem">${Store.mode==="cloud"?"Bulut kaydı":Store.mode==="device"?"Cihaz kaydı":"Yükleniyor"}</span></div></div>`}
+    </header>
+    ${!ready?html`<p class="muted">Hazırlanıyor…</p>`:loadErr?html`<div class="notice bad">${loadErr}</div>`:
+      view==="services"?html`<${Guard}><${Services}/><//>`:
+      p?html`<div class="stack">
+        <div class="tabs" role="tablist">${TABS.map(([k,l])=>html`<button role="tab" aria-selected=${tab===k} onClick=${()=>setTab(k)} key=${k}>${l}</button>`)}</div>
+        ${tab==="info"&&html`<${Guard} key=${"g-"+tab}><${InfoTab} p=${p} update=${update}/><//>`}
+        ${tab==="photos"&&html`<${Guard} key=${"g-"+tab}><${PhotosTab} p=${p} update=${update} toast=${toast}/><//>`}
+        ${tab==="design"&&html`<${Guard} key=${"g-"+tab}><${DesignTab} p=${p} update=${update} toast=${toast}/><//>`}
+        ${tab==="stages"&&html`<${Guard} key=${"g-"+tab}><${StagesTab} p=${p} update=${update} toast=${toast} go=${setTab}/><//>`}
+        ${tab==="video"&&html`<${Guard} key=${"g-"+tab}><${VideoTab} p=${p} update=${update} toast=${toast}/><//>`}
+      </div>`:html`<${ProjectList} projects=${projects} open=${id=>{setOpenId(id);setTab("info")}} create=${create} show=${showNew} setShow=${setShowNew}/>`}
+    <nav class="bottom">
+      <button aria-current=${view==="home"&&!p?"page":undefined} onClick=${()=>{setView("home");setOpenId(null)}}>${I.home}Projeler</button>
+      <button onClick=${()=>{setView("home");setOpenId(null);setShowNew(true)}} aria-label="Yeni proje" style=${{color:"var(--accent)"}}>${I.plus}Yeni</button>
+      <button aria-current=${view==="services"?"page":undefined} onClick=${()=>setView("services")}>${I.plug}Servisler</button>
+    </nav>
+    ${toastMsg&&html`<div class="toast" role="status">${toastMsg}</div>`}
+  </div>`;
+}
+window.__bvStarted=true;
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${Guard}><${App}/><//>`);
+</script>
+
+<script>
+if("serviceWorker" in navigator && location.protocol==="https:" && !(window.claude&&window.claude.use)){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+</script>
+</body>
+</html>
