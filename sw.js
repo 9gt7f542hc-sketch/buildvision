@@ -1,5 +1,5 @@
 // BuildVision AI — offline shell cache. Projects and photos live in IndexedDB, not here.
-const CACHE = "buildvision-v5";
+const CACHE = "buildvision-v6";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png",
   "https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js",
