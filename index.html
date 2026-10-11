@@ -147,7 +147,7 @@ const STAGE_SETS = {
     ["empty","Boş arsa","The plot is empty: flat dirt and dry grass, survey stakes and string lines marking the footprint."],
     ["excavation","Hafriyat","Excavation: an excavator digs the footprint, a dump truck is loaded, piles of soil."],
     ["foundation","Temel","Foundation: rebar grid and formwork, a concrete mixer pours the raft foundation."],
-    ["frame","Betonarme karkas","Reinforced concrete columns and slabs rise floor by floor, timber shoring, tower crane."],
+    ["frame","Betonarme karkas","Reinforced concrete columns and slabs rise floor by floor, timber shoring, all machines at ground level."],
     ["walls_roof","Duvar ve çatı","Brick infill walls, empty window openings, roof built, scaffolding around."],
     ["facade","Cephe ve pencere","Plaster and cladding applied, windows installed, scaffolding partly removed."],
     ["landscape","Bahçe ve çevre","Facade finished, lawn and trees planted, walkway and parking paved."],
@@ -444,7 +444,7 @@ const HF = {
   base(){ return window.__BV_SPACE_URL || "https://lightricks-ltx-video-distilled.hf.space"; },
   W: 576, H: 1024
 };
-const NEG = "worst quality, inconsistent motion, blurry, jittery, distorted, deformed building, changing architecture, extra floors, crane, tower crane, crane on roof, changes to neighboring buildings, new buildings, camera movement";
+const NEG = "worst quality, inconsistent motion, blurry, jittery, distorted, deformed building, changing architecture, extra floors, crane, tower crane, crane arm, crane jib, lattice boom, boom arm, concrete pump boom, hanging load, suspended steel beam, objects floating in the air, overhead machinery, crane on roof, changes to the mosque, changes to the minaret, changes to the dome, changes to neighboring buildings, new buildings, camera movement, text, labels, lines drawn on the image";
 /* the token lives only in this device's storage; it is never written to code, the project record or the server */
 const Token = {
   get(){ try{ return localStorage.getItem("bv_hf_token")||"" }catch(e){ return "" } },
@@ -533,14 +533,14 @@ async function hfImageToVideo({imageBlob,prompt,seconds,onStatus,signal}){
 
 
 /* ------------------------------------------------------------------ AI film plan: same camera, chained clips */
-const KEEP_SCENE="Completely static camera, same viewpoint. All construction work happens only on the project plot in the center foreground; the neighboring buildings, minaret, street and sky stay exactly the same. No crane. Fast construction timelapse: workers move quickly, shadows and clouds sweep across. Photorealistic.";
+const KEEP_SCENE="Completely static camera, same viewpoint. All work happens only on the project plot in the center foreground, at ground level; the neighboring buildings, mosque, minaret, street and sky stay exactly the same. Fast timelapse of building work: workers move quickly, shadows and clouds sweep across. Photorealistic.";
 const KEEP_BUILDING="Keep the building's shape, floor count, floor heights and window openings exactly the same as in the first frame; do not add or remove floors.";
 const FILM_STAGES=[
   {key:"dig1",title:"Hafriyat başlıyor",src:"empty",p:"A yellow excavator starts digging the empty plot, piles of soil grow, a dump truck arrives."},
   {key:"dig2",title:"Hafriyat sürüyor",src:"chain",p:"The excavator deepens the foundation pit, dump trucks carry soil away, workers set survey stakes."},
   {key:"found",title:"Temel",src:"chain",p:"Workers lay rebar mesh and formwork in the pit, a concrete mixer truck pours the foundation slab."},
   {key:"cols",title:"Kolonlar",src:"chain",p:"Concrete columns rise from the foundation, workers fix formwork and rebar for the ground floor."},
-  {key:"floors",title:"Katlar yükseliyor",src:"chain",p:"Floor slabs are poured one after another from a concrete pump truck parked on the plot, the concrete frame grows upward floor by floor, timber shoring under each slab."},
+  {key:"floors",title:"Katlar yükseliyor",src:"chain",p:"Workers on the slab build timber formwork and tie steel rebar by hand, then spread fresh concrete across each slab with shovels; the concrete frame grows upward floor by floor, timber props under each slab."},
   {key:"walls",title:"Duvar örülüyor",src:"chain",p:"Workers lay red bricks between the concrete columns, walls fill in floor by floor. "+"KB"},
   {key:"top",title:"Üst kat ve çatı iskeleti",src:"chain",p:"The top floor walls are finished and the roof timber structure is built on top. "+"KB"},
   {key:"roof",title:"Çatı",src:"chain",p:"Workers cover the roof with dark grey shingles, metal scaffolding rises around the whole building. "+"KB"},
@@ -633,17 +633,51 @@ function timelineFor(p){
   const siteAt=keys.indexOf("walls");
   keys.forEach((k,i)=>{
     if(i===siteAt&&site)items.push({uid:"ph-site",type:"photo",id:site.id,title:"Bugün",note:"Gerçek şantiye fotoğrafı",seconds:2.5});
-    clip(k).sort((a,b)=>a.key.localeCompare(b.key)).forEach(c=>items.push({uid:"cl-"+c.key,type:"clip",id:c.id,title:(FILM_STAGES.find(s=>s.key===k)||{}).title+(c.key.endsWith("_b")?" (devam)":""),note:"AI klip · "+c.seconds+" sn",seconds:c.seconds,stage:k}));
+    clip(k).sort((a,b)=>a.key.localeCompare(b.key)).forEach(c=>items.push({uid:"cl-"+c.key,type:"clip",id:c.id,title:(FILM_STAGES.find(s=>s.key===k)||{}).title+(c.key.endsWith("_b")?" (devam)":""),note:"AI klip · "+c.seconds+" sn",seconds:c.seconds,stage:k,check:c.check,approved:c.approved,key:c.key}));
   });
   if(siteAt<0&&site)items.push({uid:"ph-site",type:"photo",id:site.id,title:"Bugün",note:"Gerçek şantiye fotoğrafı",seconds:2.5});
-  (p.aiClips||[]).filter(c=>!c.key).forEach((c,i)=>items.splice(items.findIndex(x=>x.uid==="ph-site")+1||items.length,0,{uid:"test-"+c.id,type:"clip",id:c.id,title:"Bugünden ileri (test klibi)",note:"AI klip · "+c.seconds+" sn",seconds:c.seconds,stage:"test"}));
+  (p.aiClips||[]).filter(c=>!c.key).forEach((c,i)=>items.splice(items.findIndex(x=>x.uid==="ph-site")+1||items.length,0,{uid:"test-"+c.id,type:"clip",id:c.id,title:"Bugünden ileri (test klibi)",note:"AI klip · "+c.seconds+" sn",seconds:c.seconds,stage:"test",check:c.check,approved:c.approved,cid:c.id}));
   if(render)items.push({uid:"ph-render",type:"photo",id:render.id,title:"Tamamlanmış tasarım",note:"Mimar 3D görseli",seconds:3});
   return items;
 }
 function fitFont(g,text,weight,size,maxW){let z=size;do{g.font=`${weight} ${z}px Archivo, Arial, sans-serif`;if(g.measureText(text).width<=maxW)break;z-=2}while(z>18);}
+/* How high the building can reach at the END of each stage (0 = ground works only, 1 = full height). */
+const STAGE_RISE={dig1:0,dig2:0,found:0,cols:0.4,floors:1,walls:1,top:1,roof:1,plaster:1,windows:1,garden:1,done:1,test:1};
+const MASK_DEF={on:false,width:100,cx:50,top:6,ground:48};
+function maskFor(m,stage){const mm={...MASK_DEF,...(m||{})};const k=(stage||"test").replace(/_b$/,"");const f=k in STAGE_RISE?STAGE_RISE[k]:1;return {...mm,top:mm.ground+(mm.top-mm.ground)*f}}
+function maskRect(W,H,m){const cx=(m.cx==null?50:m.cx)/100;return {x0:Math.max(0,W*(cx-m.width/200)),x1:Math.min(W,W*(cx+m.width/200)),y0:H*(m.top/100)}}
+function coverDraw(ctx,el,W,H){const ew=el.videoWidth||el.naturalWidth||el.width,eh=el.videoHeight||el.naturalHeight||el.height;const r=Math.max(W/ew,H/eh);ctx.drawImage(el,(W-ew*r)/2,(H-eh*r)/2,ew*r,eh*r)}
+/* Replace everything outside the plot area of a chain frame with the clean empty-plot plate, so drift or stray objects never carry into the next clip. */
+async function cleanFrame(frameBlob,plateBlob,m){
+  const W=HF.W,H=HF.H;const lu=b=>loadImg(URL.createObjectURL(b));
+  const [fr,pl]=await Promise.all([lu(frameBlob),lu(plateBlob)]);
+  const c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");coverDraw(g,pl,W,H);
+  const t=document.createElement("canvas");t.width=W;t.height=H;const tg=t.getContext("2d");coverDraw(tg,fr,W,H);tg.globalCompositeOperation="destination-in";tg.drawImage(maskCanvas(W,H,m),0,0);
+  g.drawImage(t,0,0);URL.revokeObjectURL(fr.src);URL.revokeObjectURL(pl.src);
+  return await new Promise(res=>c.toBlob(res,"image/jpeg",0.92));
+}
+/* Quota-free check: do new sharp structures (e.g. a crane arm) appear OUTSIDE the plot area during the clip? */
+async function outsideCheck(blob,m,stage){
+  const mm=maskFor(m,stage);const W=160,H=284;
+  const v=document.createElement("video");v.muted=true;v.playsInline=true;v.preload="auto";const u=URL.createObjectURL(blob);v.src=u;
+  try{
+    await new Promise((res,rej)=>{const t=setTimeout(()=>rej(aiErr("check","Klip okunamadı.")),15000);v.onloadeddata=()=>{clearTimeout(t);res()};v.onerror=()=>{clearTimeout(t);rej(aiErr("check","Klip okunamadı."))}});
+    const c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d",{willReadFrequently:true});
+    const seek=t=>new Promise(res=>{const to=setTimeout(res,4000);v.onseeked=()=>{clearTimeout(to);res()};v.currentTime=t});
+    const edges=()=>{coverDraw(g,v,W,H);const d=g.getImageData(0,0,W,H).data;const y=new Float32Array(W*H);for(let i=0;i<W*H;i++)y[i]=.299*d[i*4]+.587*d[i*4+1]+.114*d[i*4+2];
+      const e=new Float32Array(W*H);for(let yy=1;yy<H-1;yy++)for(let x=1;x<W-1;x++){const i=yy*W+x;const gx=y[i-W+1]+2*y[i+1]+y[i+W+1]-y[i-W-1]-2*y[i-1]-y[i+W-1];const gy=y[i+W-1]+2*y[i+W]+y[i+W+1]-y[i-W-1]-2*y[i-W]-y[i-W+1];e[i]=Math.hypot(gx,gy)/4}return e};
+    const r=maskRect(W,H,mm),pad=4;const out=new Uint8Array(W*H);let n=0;
+    for(let yy=2;yy<H-2;yy++)for(let x=2;x<W-2;x++){if(x<r.x0-pad||x>r.x1+pad||yy<r.y0-pad){out[yy*W+x]=1;n++}}
+    if(n<50)return {score:0,flagged:false,stage:stage||"test",at:new Date().toISOString(),note:"Proje alanı bütün kareyi kaplıyor; kontrol edilecek alan yok."};
+    const dur=v.duration||5;await seek(Math.min(0.05,dur/10));const r0=edges();const e0=new Float32Array(W*H);
+    for(let yy=1;yy<H-1;yy++)for(let x=1;x<W-1;x++){let mx=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const q=r0[(yy+dy)*W+x+dx];if(q>mx)mx=q}e0[yy*W+x]=mx}
+    let best=0;for(const f of [0.25,0.45,0.65,0.85,0.98]){await seek(dur*f);const e=edges();let k=0;for(let i=0;i<W*H;i++)if(out[i]&&e[i]>22&&e0[i]<12)k++;best=Math.max(best,k/n)}
+    return {score:Math.round(best*10000)/10000,flagged:best>0.0025,stage:stage||"test",at:new Date().toISOString()};
+  }finally{URL.revokeObjectURL(u)}
+}
 function maskCanvas(W,H,m){
   const c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
-  const x0=W*(0.5-m.width/200),x1=W*(0.5+m.width/200),y0=H*(m.top/100),f=Math.max(8,W*0.04);
+  const {x0,x1,y0}=maskRect(W,H,m),f=Math.max(8,W*0.04);
   g.filter=`blur(${f}px)`;g.fillStyle="#fff";g.fillRect(x0,y0,x1-x0,H-y0+f*2);g.filter="none";
   return c;
 }
@@ -662,7 +696,7 @@ async function mergeTimeline(p,items,opt,onProgress){
   if(opt.mask){
     const bg=(p.filmPlate&&p.photos.find(x=>x.id===p.filmPlate))||p.photos.find(x=>x.role==="empty_plot");
     if(!bg)throw aiErr("no_plate","Çevreyi sabitlemek için “Boş arsa” fotoğrafı gerekli.");
-    plate=await loadImg(await Store.resolveUrl(bg.id));mask=maskCanvas(W,H,opt.mask);
+    plate=await loadImg(await Store.resolveUrl(bg.id));const mcache={};mask=st=>{const mm=maskFor(opt.mask,st);return mcache[mm.top]||(mcache[mm.top]=maskCanvas(W,H,mm))};
     work=document.createElement("canvas");work.width=W;work.height=H;
   }
   const total=loaded.reduce((a,x)=>a+x.dur,0)+END;
@@ -675,7 +709,7 @@ async function mergeTimeline(p,items,opt,onProgress){
     g.globalAlpha=alpha;
     if(it.type==="photo"){cover(g,it.el,1+0.05*u)}
     else if(mask){const w=work.getContext("2d");w.globalCompositeOperation="source-over";w.clearRect(0,0,W,H);cover(w,plate);
-      const t=document.createElement("canvas");t.width=W;t.height=H;const tg=t.getContext("2d");cover(tg,it.el);tg.globalCompositeOperation="destination-in";tg.drawImage(mask,0,0);
+      const t=document.createElement("canvas");t.width=W;t.height=H;const tg=t.getContext("2d");cover(tg,it.el);tg.globalCompositeOperation="destination-in";tg.drawImage(mask(it.stage),0,0);
       w.drawImage(t,0,0);g.drawImage(work,0,0)}
     else cover(g,it.el);
     g.globalAlpha=1;
@@ -968,12 +1002,12 @@ function StagesTab({p,update,toast,go}){
 }
 
 
-const AI_STEPS=[["upload","Fotoğraf Hugging Face’e gönderiliyor"],["queue","Sıraya alındı"],["generating","Video üretiliyor (GPU)"],["download","Video indiriliyor"],["verify","Video doğrulanıyor"]];
+const AI_STEPS=[["upload","Fotoğraf Hugging Face’e gönderiliyor"],["queue","Sıraya alındı"],["generating","Video üretiliyor (GPU)"],["download","Video indiriliyor"],["verify","Video doğrulanıyor"],["check","Arsa dışı kontrol ediliyor"]];
 function AiTimelapse({p,update,toast}){
   const src=p.photos.find(x=>x.role==="construction_front")||p.photos.find(x=>x.role==="empty_plot");
   const defPrompt = p.type==="ongoing_construction"
-    ? "Construction timelapse, completely static camera. Fast-moving workers on scaffolding plaster the facade of this exact building, a cement mixer turns on the plot, shadows and clouds move quickly. Keep the building's shape, floor count and window openings exactly the same. Photorealistic."
-    : "Construction timelapse, completely static camera. A yellow excavator digs the plot, a dump truck drives away with soil, workers lay out the foundation, shadows and clouds move quickly. Photorealistic.";
+    ? "Timelapse of building work, completely static camera. Fast-moving workers on scaffolding plaster the facade of this exact building, a cement mixer turns on the plot, shadows and clouds move quickly. Keep the building's shape, floor count and window openings exactly the same. Photorealistic."
+    : "Timelapse of building work, completely static camera. A yellow excavator digs the plot, a dump truck drives away with soil, workers lay out the foundation, shadows and clouds move quickly. Photorealistic.";
   const [prompt,setPrompt]=useState(defPrompt);
   const [step,setStep]=useState(null),[err,setErr]=useState(null),[res,setRes]=useState(null),[t0,setT0]=useState(0),[now,setNow]=useState(0);
   const ctl=useRef(null);
@@ -1037,7 +1071,8 @@ function AiTimelapse({p,update,toast}){
 function FilmPlan({p,update,toast}){
   const plan=filmPlan(p);const clips=p.aiClips||[];const errs=p.aiErrors||{};
   const tested=p.aiTest&&p.aiTest.status==="ok";
-  const empty=p.photos.find(x=>x.role==="empty_plot");const site=p.photos.find(x=>x.role==="construction_front");
+  const empty=(p.filmPlate&&p.photos.find(x=>x.id===p.filmPlate))||p.photos.find(x=>x.role==="empty_plot");const site=p.photos.find(x=>x.role==="construction_front");
+  const needsOk=c=>!!(c&&c.check&&c.check.flagged&&!c.approved);
   const [busyKey,setBusyKey]=useState(null),[step,setStep]=useState(null),[auto,setAuto]=useState(false),[merge,setMerge]=useState(null),[mergeErr,setMergeErr]=useState(null),[final,setFinal]=useState(null);
   const ref=useRef(p);if(ref.current.id!==p.id||(p.aiClips||[]).length>=(ref.current.aiClips||[]).length)ref.current=p;
   const commit=np=>{ref.current=np;update(np)};const stopRef=useRef(false),ctl=useRef(null);
@@ -1048,7 +1083,10 @@ function FilmPlan({p,update,toast}){
     if(it.src==="empty"){if(!empty)throw aiErr("no_source","Boş arsa fotoğrafı yok (Fotoğraflar’da “Boş arsa” olarak işaretleyin).");return toVertical(await Store.getBlob(empty.id))}
     if(it.src==="site"){if(!site)throw aiErr("no_source","Şantiye (ön) fotoğrafı yok.");return toVertical(await Store.getBlob(site.id))}
     const prev=clipFor(plan[i-1].key);if(!prev)throw aiErr("need_prev","Önce bir önceki klip üretilmeli; bu klip onun son karesinden devam eder.");
-    return lastFrame(await Store.getBlob(prev.id));
+    if(needsOk(prev))throw aiErr("need_approval","Önceki klipte arsa dışında değişiklik bulundu. Önce izleyip onaylayın ya da silin.");
+    let fr=await lastFrame(await Store.getBlob(prev.id));
+    if(empty)fr=await cleanFrame(fr,await Store.getBlob(empty.id),maskFor(ref.current.filmMask,plan[i-1].key));
+    return fr;
   }
   async function gen(i){
     const it=plan[i];setBusyKey(it.key);setStep("prepare");
@@ -1056,10 +1094,12 @@ function FilmPlan({p,update,toast}){
     try{
       const img=await sourceFor(i);
       const out=await hfImageToVideo({imageBlob:img,prompt:it.prompt,seconds:5,onStatus:setStep,signal:ac.signal});
+      setStep("check");let check=null;try{check=await outsideCheck(out.blob,ref.current.filmMask,it.key)}catch(e){check=null}
       const id=await Store.putBlob(out.blob);
       const cur=ref.current;const e2={...(cur.aiErrors||{})};delete e2[it.key];
-      const prevC=i>0?clipFor(plan[i-1].key):null;const clip={id,key:it.key,from:it.src==="chain"&&prevC?prevC.id:null,seconds:Math.round(out.meta.duration*10)/10,width:out.meta.width,height:out.meta.height,prompt:it.prompt,model:HF.model,space:HF.space,verified:true,at:new Date().toISOString()};
-      commit({...cur,aiClips:[...(cur.aiClips||[]).filter(c=>c.key!==it.key),clip],aiErrors:e2});
+      const prevC=i>0?clipFor(plan[i-1].key):null;const clip={id,key:it.key,from:it.src==="chain"&&prevC?prevC.id:null,seconds:Math.round(out.meta.duration*10)/10,width:out.meta.width,height:out.meta.height,prompt:it.prompt,model:HF.model,space:HF.space,verified:true,check,at:new Date().toISOString()};
+      const ex=(cur.filmExclude||[]).filter(x=>x!=="cl-"+it.key);if(check&&check.flagged){ex.push("cl-"+it.key);stopRef.current=true}
+      commit({...cur,aiClips:[...(cur.aiClips||[]).filter(c=>c.key!==it.key),clip],aiErrors:e2,filmExclude:ex});
       return true;
     }catch(e){
       const cur=ref.current;commit({...cur,aiErrors:{...(cur.aiErrors||{}),[it.key]:{code:e.code||"failed",message:e.message||String(e),at:new Date().toISOString()}}});
@@ -1072,7 +1112,8 @@ function FilmPlan({p,update,toast}){
     for(let i=0;i<plan.length;i++){
       if(stopRef.current)break;
       if(clipFor(plan[i].key))continue;
-      const ok=await gen(i);if(!ok)break;
+      if(i>0&&needsOk(clipFor(plan[i-1].key)))break;
+      const ok=await gen(i);if(!ok||needsOk(clipFor(plan[i].key)))break;
     }
     setAuto(false);
   }
@@ -1091,20 +1132,23 @@ function FilmPlan({p,update,toast}){
   return html`<div class="stack" style="border-top:1px solid var(--line);padding-top:14px">
     <div class="row"><h3 class="grow">${p.aiFilmSeconds||60} sn film planı</h3><${Chip} kind=${locked?"warn":ready===plan.length?"ok":"info"}>${locked?"Test bekleniyor":`${ready}/${plan.length} klip`}<//></div>
     ${locked?html`<div class="notice">Film üretimi, yukarıdaki 5 saniyelik test başarılı olduktan sonra açılır. Henüz başarılı bir gerçek AI üretimi yok.</div>`
-      :html`<p class="muted" style="font-size:.88rem">Kesintisiz süreç: ilk klip boş arsa fotoğrafından başlar, sonraki her klip bir önceki klibin son karesinden devam eder; boş arsadan anahtar teslime tek zincir. Kamera sabittir. Bir klibi silerseniz ondan sonrakilerin de yeniden üretilmesi gerekir. AI modeli binayı her klipte birebir korumayabilir; sonucu izleyerek kontrol edin.</p>`}
+      :html`<p class="muted" style="font-size:.88rem">Kesintisiz süreç: ilk klip seçili boş arsa görselinden başlar, sonraki her klip bir önceki klibin son karesinden devam eder. Her geçişte son karenin arsa dışı kısmı temiz boş arsa görseliyle değiştirilir; böylece bir klipteki hata sonrakine taşınmaz. Komutlarda vinç ve havada asılı makine yoktur. Her yeni klip arsa dışı için otomatik kontrol edilir; şüpheli klipte zincir durur ve onayınızı bekler. Bir klibi silerseniz ondan sonrakilerin de yeniden üretilmesi gerekir. AI modeli binayı her klipte birebir korumayabilir; sonucu izleyerek kontrol edin.</p>`}
     ${plan.map((it,i)=>{const c=clips.find(x=>x.key===it.key);const er=errs[it.key];const me=busyKey===it.key;
       const srcLabel=it.src==="empty"?"Boş arsa fotoğrafından":it.src==="site"?"Gerçek şantiye fotoğrafından":"Önceki klibin son karesinden";
       const pc=i>0?clips.find(x=>x.key===plan[i-1].key):null;const broken=c&&it.src==="chain"&&i>0&&(!pc||(c.from?c.from!==pc.id:false));
       const oldAnchor=c&&it.key==="walls"&&!c.from;
       return html`<div class="stack" key=${it.key} style="gap:6px;padding-block:8px;border-top:1px solid var(--line)">
         <div class="row"><span class="step">${String(i+1).padStart(2,"0")}</span><strong class="grow">${it.title}</strong>
-          <${Chip} kind=${c?"ok":me?"info":er?"bad":""}>${c?"Hazır · doğrulandı":me?"Üretiliyor":er?"Üretilemedi":"Bekliyor"}<//></div>
+          <${Chip} kind=${c?(needsOk(c)?"warn":"ok"):me?"info":er?"bad":""}>${c?(needsOk(c)?"Kontrol gerekli":"Hazır · doğrulandı"):me?"Üretiliyor":er?"Üretilemedi":"Bekliyor"}<//></div>
         <span class="muted" style="font-size:.8rem">${srcLabel}</span>
         ${(broken||oldAnchor)&&html`<span style="font-size:.82rem;color:var(--warn,#d9a400)">${oldAnchor?"Bu klip eski yöntemle şantiye fotoğrafından üretilmiş; kesintisiz zincire uymaz. Onay verdiğinizde silip yeniden üretebilirsiniz.":"Zincir kopuk: önceki klip silindi ya da değişti. Kesintisiz süreç için bu klibin de yeniden üretilmesi gerekir."}</span>`}
         ${me&&html`<span class="muted" style="font-size:.85rem">${(AI_STEPS.find(x=>x[0]===step)||["","Hazırlanıyor"])[1]}…</span>`}
         ${er&&!c&&!me&&html`<span style="font-size:.85rem;color:var(--bad)">${er.message}</span>`}
-        ${c&&html`<${OutVideo} id=${c.id}/><button class="ghost" disabled=${!!busyKey||auto} onClick=${()=>{const cur=ref.current;commit({...cur,aiClips:(cur.aiClips||[]).filter(x=>x.key!==it.key)})}}>Klibi sil (yeniden üretmek için)</button>`}
-        ${!locked&&!c&&html`<button disabled=${!!busyKey||auto||IN_CLAUDE||(i>0&&plan[i].src==="chain"&&!clips.some(x=>x.key===plan[i-1].key))} onClick=${()=>{stopRef.current=false;gen(i)}}>Bu klibi üret</button>`}
+        ${needsOk(c)&&html`<div class="notice bad" style="font-size:.85rem">Arsa dışında yeni bir yapı beliriyor olabilir (ör. vinç kolu) · skor %${(c.check.score*100).toFixed(1)}. Klip filme eklenmedi ve zincir burada durdu. İzleyin: uygunsa <b>Onayla</b>, değilse <b>Klibi sil</b>.</div>
+          <button disabled=${!!busyKey||auto} onClick=${()=>{const cur=ref.current;commit({...cur,aiClips:(cur.aiClips||[]).map(x=>x.key===it.key?{...x,approved:true}:x),filmExclude:(cur.filmExclude||[]).filter(x=>x!=="cl-"+it.key)})}}>Onayla (uygun, filme ekle)</button>`}
+        ${c&&c.check&&!c.check.flagged&&html`<span class="muted" style="font-size:.8rem">Arsa dışı kontrolü: temiz</span>`}
+        ${c&&html`<${OutVideo} id=${c.id}/><button class="ghost" disabled=${!!busyKey||auto} onClick=${()=>{const cur=ref.current;commit({...cur,aiClips:(cur.aiClips||[]).filter(x=>x.key!==it.key),filmExclude:(cur.filmExclude||[]).filter(x=>x!=="cl-"+it.key)})}}>Klibi sil (yeniden üretmek için)</button>`}
+        ${!locked&&!c&&html`<button disabled=${!!busyKey||auto||IN_CLAUDE||(i>0&&plan[i].src==="chain"&&!clips.some(x=>x.key===plan[i-1].key))||(i>0&&needsOk(clips.find(x=>x.key===plan[i-1].key)))} onClick=${()=>{stopRef.current=false;gen(i)}}>Bu klibi üret</button>`}
       </div>`})}
     ${!locked&&html`<div class="stack">
       ${auto?html`<button class="block" onClick=${()=>{stopRef.current=true;ctl.current&&ctl.current.abort()}}>Durdur</button>`
@@ -1124,19 +1168,31 @@ function FilmPlan({p,update,toast}){
 function QuotaFreeFilm({p,update,toast}){
   const items=timelineFor(p);
   const excluded=p.filmExclude||[];
-  const m=p.filmMask||{on:false,width:92,top:6};
+  const m={...MASK_DEF,...(p.filmMask||{})};
   const sel=items.filter(it=>!excluded.includes(it.uid));
-  const [prog,setProg]=useState(null),[err,setErr]=useState(null),[res,setRes]=useState(null),[peek,setPeek]=useState(null);
+  const [prog,setProg]=useState(null),[err,setErr]=useState(null),[res,setRes]=useState(null),[peek,setPeek]=useState(null),[scan,setScan]=useState(null);
   const prevRef=useRef();
   const plates=p.photos.filter(x=>x.role==="empty_plot");
   const bg=(p.filmPlate&&p.photos.find(x=>x.id===p.filmPlate))||plates[0];
   useEffect(()=>{(async()=>{const c=prevRef.current;if(!c||!m.on||!bg)return;const g=c.getContext("2d");const u=await Store.resolveUrl(bg.id);if(!u)return;const img=await loadImg(u).catch(()=>null);if(!img)return;
     const W=c.width,H=c.height,r=Math.max(W/img.width,H/img.height);g.drawImage(img,(W-img.width*r)/2,(H-img.height*r)/2,img.width*r,img.height*r);
-    g.fillStyle="rgba(0,0,0,.55)";const x0=W*(0.5-m.width/200),x1=W*(0.5+m.width/200),y0=H*m.top/100;g.fillRect(0,0,W,y0);g.fillRect(0,y0,x0,H-y0);g.fillRect(x1,y0,W-x1,H-y0);
-    g.strokeStyle="#e8661c";g.lineWidth=3;g.strokeRect(x0,y0,x1-x0,H-y0)})()},[m.on,m.width,m.top,bg&&bg.id]);
-  const toggle=uid=>update({...p,filmExclude:excluded.includes(uid)?excluded.filter(x=>x!==uid):[...excluded,uid]});
+    g.fillStyle="rgba(0,0,0,.55)";const {x0,x1,y0}=maskRect(W,H,m);g.fillRect(0,0,W,y0);g.fillRect(0,y0,x0,H-y0);g.fillRect(x1,y0,W-x1,H-y0);
+    g.strokeStyle="#e8661c";g.lineWidth=3;g.strokeRect(x0+1.5,y0,x1-x0-3,H-y0);
+    const yg=H*m.ground/100;g.setLineDash([8,6]);g.strokeStyle="#4fc3f7";g.beginPath();g.moveTo(x0,yg);g.lineTo(x1,yg);g.stroke();g.setLineDash([]);
+    g.fillStyle="#4fc3f7";g.font="700 11px Arial";g.fillText("hafriyat/temel sınırı",x0+6,yg-5);g.fillStyle="#e8661c";g.fillText("bina üst sınırı",x0+6,y0+14)})()},[m.on,m.width,m.cx,m.top,m.ground,bg&&bg.id]);
+  const toggle=uid=>{const it=items.find(x=>x.uid===uid);const inc=excluded.includes(uid);
+    const clips=(inc&&it&&it.check&&it.check.flagged)?(p.aiClips||[]).map(c=>c.id===it.id?{...c,approved:true}:c):p.aiClips;
+    update({...p,aiClips:clips,filmExclude:inc?excluded.filter(x=>x!==uid):[...excluded,uid]})};
   const setM=patch=>update({...p,filmMask:{...m,...patch}});
   const clipsIn=sel.filter(x=>x.type==="clip").length;
+  async function scanAll(){
+    const list=items.filter(x=>x.type==="clip");setScan({i:0,n:list.length});
+    const res={};
+    for(let k=0;k<list.length;k++){setScan({i:k+1,n:list.length});try{res[list[k].id]=await outsideCheck(await Store.getBlob(list[k].id),m,list[k].stage)}catch(e){}}
+    const flagged=list.filter(x=>res[x.id]&&res[x.id].flagged&&!x.approved).map(x=>x.uid);
+    update({...p,aiClips:(p.aiClips||[]).map(c=>res[c.id]?{...c,check:res[c.id]}:c),filmExclude:[...new Set([...(p.filmExclude||[]),...flagged])]});
+    setScan(null);toast(flagged.length?`${flagged.length} klipte arsa dışında değişiklik bulundu; filmden çıkarıldı`:"Arsa dışında yeni yapı bulunmadı");
+  }
   const dur=Math.round(sel.reduce((a,x)=>a+(x.seconds||0),0)+3);
   async function go(){
     setErr(null);setRes(null);setProg(0);
@@ -1154,7 +1210,8 @@ function QuotaFreeFilm({p,update,toast}){
     <div class="stack" style="gap:0">
       ${items.map((it,i)=>{const on=!excluded.includes(it.uid);return html`<div key=${it.uid} style="border-top:${i?"1px solid var(--line)":"0"}"><div class="row" style="padding-block:10px;gap:10px">
         <span class="step" style="width:24px">${String(i+1).padStart(2,"0")}</span>
-        <div class="grow stack" style="gap:2px"><strong style="font-size:.95rem">${it.title}</strong><span class="muted" style="font-size:.8rem">${it.note}</span></div>
+        <div class="grow stack" style="gap:2px"><strong style="font-size:.95rem">${it.title}</strong><span class="muted" style="font-size:.8rem">${it.note}</span>
+          ${it.check&&html`<span style=${{fontSize:".78rem",color:it.check.flagged&&!it.approved?"var(--bad)":"var(--ok,#3fb950)"}}>${it.check.flagged&&!it.approved?`Arsa dışında değişiklik · %${(it.check.score*100).toFixed(1)}`:it.check.flagged?"Kontrol edildi · onaylandı":"Arsa dışı temiz"}</span>`}</div>
         <button class="ghost" style=${{minHeight:"44px",padding:"0 10px"}} onClick=${()=>setPeek(peek===it.uid?null:it.uid)}>${peek===it.uid?"Kapat":"İzle"}</button>
         <button aria-pressed=${on} style=${{minHeight:"44px",padding:"0 14px",background:on?"var(--fg)":"var(--surface)",color:on?"var(--bg)":"var(--fg)"}} onClick=${()=>toggle(it.uid)}>${on?"Filmde":"Dışarıda"}</button>
       </div>${peek===it.uid&&html`<div style="padding-bottom:10px">${it.type==="clip"?html`<${OutVideo} id=${it.id}/>`:html`<${Img} id=${it.id}/>`}</div>`}</div>`})}
@@ -1167,12 +1224,18 @@ function QuotaFreeFilm({p,update,toast}){
     <div class="stack" style="gap:8px;border-top:1px solid var(--line);padding-top:12px">
       <div class="row"><strong class="grow">Çevreyi sabitle (AI kliplerde)</strong>
         <div class="seg" style="grid-template-columns:1fr 1fr;width:180px"><button aria-pressed=${!m.on} onClick=${()=>setM({on:false})}>Kapalı</button><button aria-pressed=${m.on} disabled=${!bg} onClick=${()=>setM({on:true})}>Açık</button></div></div>
-      <p class="muted" style="font-size:.84rem">Açıkken, işaretli proje alanı dışındaki her şey boş arsa fotoğrafından alınır. Komşu çatıda beliren vinç gibi alan dışı hatalar gizlenir. ${!bg?"(Boş arsa fotoğrafı olmadığı için kullanılamıyor.)":""}</p>
+      <p class="muted" style="font-size:.84rem">Açıkken, proje alanı dışındaki her şey (gökyüzü, cami, komşu binalar) seçili boş arsa görselinden alınır; yalnızca arsadaki hareket görünür. Hafriyat ve temel aşamalarında alan mavi kesikli çizgiye kadardır, bina yükseldikçe turuncu üst sınıra kadar büyür. Gökyüzünde beliren vinç kolu gibi hatalar böyle gizlenir. ${!bg?"(Boş arsa fotoğrafı olmadığı için kullanılamıyor.)":""}</p>
       ${m.on&&html`<div class="stack" style="gap:8px">
         <canvas ref=${prevRef} width="180" height="320" style="width:180px;height:320px;border-radius:10px;align-self:center"></canvas>
         <label class="f">Proje alanı genişliği: %${m.width}<input id="mask-w" type="range" min="30" max="100" step="2" value=${m.width} onInput=${e=>setM({width:+e.target.value})} style="padding:0;min-height:44px"/></label>
-        <label class="f">Üst sınır (binanın en yüksek noktası): %${m.top}<input id="mask-t" type="range" min="0" max="60" step="1" value=${m.top} onInput=${e=>setM({top:+e.target.value})} style="padding:0;min-height:44px"/></label>
+        <label class="f">Yatay konum: %${m.cx}<input id="mask-x" type="range" min="20" max="80" step="1" value=${m.cx} onInput=${e=>setM({cx:+e.target.value})} style="padding:0;min-height:44px"/></label>
+        <label class="f">Hafriyat/temel sınırı (mavi): %${m.ground}<input id="mask-g" type="range" min="20" max="85" step="1" value=${m.ground} onInput=${e=>setM({ground:Math.max(+e.target.value,m.top)})} style="padding:0;min-height:44px"/></label>
+        <label class="f">Bina üst sınırı (turuncu, en yüksek nokta): %${m.top}<input id="mask-t" type="range" min="0" max="60" step="1" value=${m.top} onInput=${e=>setM({top:Math.min(+e.target.value,m.ground)})} style="padding:0;min-height:44px"/></label>
       </div>`}
+    </div>
+    <div class="stack" style="gap:6px;border-top:1px solid var(--line);padding-top:12px">
+      <button class="block" disabled=${!!scan||prog!==null||!items.some(x=>x.type==="clip")} onClick=${scanAll}>${scan?`Kontrol ediliyor… ${scan.i}/${scan.n}`:"Arsa dışını kontrol et (kota harcamaz)"}</button>
+      <p class="muted" style="font-size:.82rem">Her klipte, yukarıdaki alanın dışında sonradan beliren keskin yapılar (vinç kolu, demir kiriş gibi) aranır. Bulunan klip filmden çıkarılır; izleyip uygunsa yeniden “Filmde” yapabilirsiniz. Otomatik kontrol yardımcıdır, kesin değildir; son kararı izleyerek verin.</p>
     </div>
     <p class="muted" style="font-size:.85rem">Seçili: ${sel.length} öğe (${clipsIn} AI klip) · yaklaşık ${dur} sn · dikey 9:16</p>
     <button class="primary block" disabled=${prog!==null||sel.length<2} onClick=${go}>${prog!==null?`Birleştiriliyor… %${Math.round(prog*100)}`:"Tek MP4 olarak birleştir"}</button>
